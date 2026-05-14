@@ -4,9 +4,7 @@ if (!process.env.STRIPE_SECRET_KEY && process.env.NODE_ENV === "production") {
   throw new Error("STRIPE_SECRET_KEY is required");
 }
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "sk_test_placeholder", {
-  apiVersion: "2025-04-30.basil",
-});
+export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "sk_test_placeholder");
 
 export async function getOrCreateStripeCustomer(
   organizationId: string,
