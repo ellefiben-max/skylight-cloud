@@ -110,7 +110,7 @@ export default function NewBoardPage() {
           <li>Power on your Skylight 100 and connect it to Wi-Fi.</li>
           <li>Open the local web UI (visit the board's IP address in a browser).</li>
           <li>Find the pairing code in the <strong style={{ color: "var(--color-text)" }}>Cloud Settings</strong> section.</li>
-          <li>Enter the code above within 30 minutes.</li>
+          <li>Enter the code above. It is fixed to this board's MAC address.</li>
         </ol>
       </div>
     </div>

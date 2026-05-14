@@ -29,11 +29,18 @@ export async function POST(req: NextRequest) {
   const parsed = Schema.safeParse(body);
   if (!parsed.success) return err("Invalid claim request", 422);
 
-  const { pairingCode, deviceName, groupName } = parsed.data;
+  const { deviceName, groupName } = parsed.data;
+  const pairingCode = parsed.data.pairingCode.trim().toUpperCase();
   const pairingCodeHash = sha256hex(pairingCode);
 
   const board = await prisma.board.findFirst({
-    where: { pairingCodeHash, pairingExpiresAt: { gt: new Date() } },
+    where: {
+      pairingCodeHash,
+      OR: [
+        { organizationId: null },
+        { organizationId: user.orgId },
+      ],
+    },
   });
 
   if (!board) return err("Invalid or expired pairing code.", 404);

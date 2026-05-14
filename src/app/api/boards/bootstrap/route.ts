@@ -37,10 +37,8 @@ export async function POST(req: NextRequest) {
 
   const d = parsed.data;
   const boardSecretHash = sha256hex(d.boardSecret);
-  const pairingCodeHash = d.pairingCode ? sha256hex(d.pairingCode) : "";
-  const pairingExpiresAt = d.pairingCode
-    ? new Date(Date.now() + 30 * 60 * 1000) // 30-minute pairing window
-    : undefined;
+  const pairingCode = d.pairingCode?.trim().toUpperCase();
+  const pairingCodeHash = pairingCode ? sha256hex(pairingCode) : "";
 
   const existing = await prisma.board.findUnique({ where: { boardId: d.boardId } });
 
@@ -54,8 +52,8 @@ export async function POST(req: NextRequest) {
       where: { boardId: d.boardId },
       data: {
         boardSecretHash,
-        pairingCodeHash: d.pairingCode ? pairingCodeHash : existing.pairingCodeHash,
-        pairingExpiresAt: d.pairingCode ? pairingExpiresAt : existing.pairingExpiresAt,
+        pairingCodeHash: pairingCode ? pairingCodeHash : existing.pairingCodeHash,
+        pairingExpiresAt: pairingCode ? null : existing.pairingExpiresAt,
         firmwareVersion: d.firmwareVersion ?? existing.firmwareVersion,
         model: d.model ?? existing.model,
         deviceName: d.deviceName ?? existing.deviceName,
@@ -76,7 +74,7 @@ export async function POST(req: NextRequest) {
       boardId: d.boardId,
       boardSecretHash,
       pairingCodeHash,
-      pairingExpiresAt,
+      pairingExpiresAt: null,
       firmwareVersion: d.firmwareVersion ?? "unknown",
       model: d.model ?? "waveshare-main",
       deviceName: d.deviceName ?? "Skylight 100",
