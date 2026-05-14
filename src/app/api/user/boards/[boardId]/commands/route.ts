@@ -7,6 +7,8 @@ import { ALLOWED_COMMAND_TYPES, BLOCKED_COMMAND_TYPES } from "@/lib/command-type
 import { logAuditEvent } from "@/lib/audit";
 import { getClientIp } from "@/lib/device-auth";
 
+export const dynamic = "force-dynamic";
+
 const Schema = z.object({
   type: z.string().min(1).max(64),
   payload: z.record(z.unknown()).optional(),

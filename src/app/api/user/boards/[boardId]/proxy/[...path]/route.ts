@@ -6,6 +6,8 @@ import { ALLOWED_COMMAND_TYPES, BLOCKED_COMMAND_TYPES } from "@/lib/command-type
 import { logAuditEvent } from "@/lib/audit";
 import { getClientIp } from "@/lib/device-auth";
 
+export const dynamic = "force-dynamic";
+
 function json(data: unknown, status = 200) {
   return NextResponse.json(data, { status });
 }

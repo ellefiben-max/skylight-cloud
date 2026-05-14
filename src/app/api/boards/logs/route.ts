@@ -4,6 +4,8 @@ import { prisma } from "@/lib/db";
 import { authenticateDevice } from "@/lib/device-auth";
 import { ok, err } from "@/lib/api-response";
 
+export const dynamic = "force-dynamic";
+
 const LOG_MAX_RETAIN = 5000;
 
 const LogEntrySchema = z.object({

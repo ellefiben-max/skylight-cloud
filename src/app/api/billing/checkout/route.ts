@@ -1,10 +1,12 @@
 import { type NextRequest } from "next/server";
 import { getSessionUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
-import { stripe, getOrCreateStripeCustomer } from "@/lib/stripe";
+import { getStripe, getOrCreateStripeCustomer } from "@/lib/stripe";
 import { stripePriceIdForBoardCount, monthlyTotalCents, unitPriceForBoardCount } from "@/lib/pricing";
 import { getBoardCount } from "@/lib/subscription";
 import { ok, err } from "@/lib/api-response";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   const user = await getSessionUser();
@@ -35,7 +37,7 @@ export async function POST(req: NextRequest) {
 
   const appUrl = process.env.APP_URL ?? "http://localhost:3000";
 
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     mode: "subscription",
     customer: stripeCustomerId,
     line_items: [{ price: priceId, quantity: boardCount }],

@@ -5,6 +5,8 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Suspense } from "react";
 
+export const dynamic = "force-dynamic";
+
 function VerifyContent() {
   const params = useSearchParams();
   const token = params.get("token");

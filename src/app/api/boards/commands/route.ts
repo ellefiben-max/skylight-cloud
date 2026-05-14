@@ -3,6 +3,8 @@ import { prisma } from "@/lib/db";
 import { authenticateDevice } from "@/lib/device-auth";
 import { ok, err } from "@/lib/api-response";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   const auth = await authenticateDevice(req);
   if (!auth.ok) return err(auth.error, auth.status);

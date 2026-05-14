@@ -3,6 +3,8 @@ import { getSessionUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { ok, err } from "@/lib/api-response";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(_req: NextRequest) {
   const user = await getSessionUser();
   if (!user) return err("Unauthorized", 401);

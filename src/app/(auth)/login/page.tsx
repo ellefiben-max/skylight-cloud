@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Suspense } from "react";
 
+export const dynamic = "force-dynamic";
+
 function LoginContent() {
   const router = useRouter();
   const params = useSearchParams();

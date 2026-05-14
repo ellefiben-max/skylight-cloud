@@ -4,6 +4,8 @@ import { prisma } from "@/lib/db";
 import { authenticateDevice } from "@/lib/device-auth";
 import { ok, err } from "@/lib/api-response";
 
+export const dynamic = "force-dynamic";
+
 const Schema = z.object({
   message: z.string().max(2048),
   source: z.string().max(64).optional(),

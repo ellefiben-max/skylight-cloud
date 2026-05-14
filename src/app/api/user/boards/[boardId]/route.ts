@@ -4,6 +4,8 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/require-auth";
 import { ok, err } from "@/lib/api-response";
 
+export const dynamic = "force-dynamic";
+
 const PatchSchema = z.object({
   deviceName: z.string().max(128).optional(),
   groupId: z.string().optional().nullable(),

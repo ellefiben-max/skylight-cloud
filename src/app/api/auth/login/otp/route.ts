@@ -8,6 +8,8 @@ import { ok, err } from "@/lib/api-response";
 import { getClientIp } from "@/lib/device-auth";
 import { logAuditEvent } from "@/lib/audit";
 
+export const dynamic = "force-dynamic";
+
 const Schema = z.object({
   userId: z.string().cuid(),
   otp: z.string().length(6).regex(/^\d{6}$/),

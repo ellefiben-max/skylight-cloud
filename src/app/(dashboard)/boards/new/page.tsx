@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export default function NewBoardPage() {
   const router = useRouter();
   const [form, setForm] = useState({ pairingCode: "", deviceName: "", groupName: "" });

@@ -6,6 +6,8 @@ import { ok, err } from "@/lib/api-response";
 import { logAuditEvent } from "@/lib/audit";
 import { getClientIp } from "@/lib/device-auth";
 
+export const dynamic = "force-dynamic";
+
 const Schema = z.object({ token: z.string().min(32) });
 
 export async function POST(req: NextRequest) {

@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export default function SignupPage() {
   const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [error, setError] = useState("");

@@ -1,8 +1,10 @@
 import { type NextRequest } from "next/server";
 import { getSessionUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { ok, err } from "@/lib/api-response";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(_req: NextRequest) {
   const user = await getSessionUser();
@@ -14,7 +16,7 @@ export async function POST(_req: NextRequest) {
 
   const appUrl = process.env.APP_URL ?? "http://localhost:3000";
 
-  const portal = await stripe.billingPortal.sessions.create({
+  const portal = await getStripe().billingPortal.sessions.create({
     customer: sub.stripeCustomerId,
     return_url: `${appUrl}/billing`,
   });

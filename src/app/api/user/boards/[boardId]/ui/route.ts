@@ -5,6 +5,8 @@ import { getSessionUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { hasActiveSubscription } from "@/lib/subscription";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ boardId: string }> }

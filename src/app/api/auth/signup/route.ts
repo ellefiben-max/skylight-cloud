@@ -9,6 +9,8 @@ import { ok, err, validationError } from "@/lib/api-response";
 import { getClientIp } from "@/lib/device-auth";
 import { logAuditEvent } from "@/lib/audit";
 
+export const dynamic = "force-dynamic";
+
 const SignupSchema = z.object({
   username: z
     .string()

@@ -6,6 +6,8 @@ import { rateLimit } from "@/lib/rate-limit";
 import { ok, err } from "@/lib/api-response";
 import { getClientIp } from "@/lib/device-auth";
 
+export const dynamic = "force-dynamic";
+
 const Schema = z.object({
   eventType: z.string().optional(),
   boardId: z.string().min(1).max(128),

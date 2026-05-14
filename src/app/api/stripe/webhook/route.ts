@@ -4,6 +4,8 @@ import { prisma } from "@/lib/db";
 import { unitPriceForBoardCount } from "@/lib/pricing";
 import type Stripe from "stripe";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   const sig = req.headers.get("stripe-signature");
   if (!sig) return NextResponse.json({ error: "Missing signature" }, { status: 400 });

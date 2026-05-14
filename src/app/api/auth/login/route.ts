@@ -1,4 +1,4 @@
-import { type NextRequest } from "next/server";
+﻿import { type NextRequest } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { verifyPassword } from "@/lib/password";
@@ -8,6 +8,7 @@ import { rateLimit } from "@/lib/rate-limit";
 import { ok, err } from "@/lib/api-response";
 import { getClientIp } from "@/lib/device-auth";
 import { logAuditEvent } from "@/lib/audit";
+export const dynamic = "force-dynamic";
 
 const Schema = z.object({
   login: z.string().min(1).max(254),

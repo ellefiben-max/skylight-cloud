@@ -7,6 +7,8 @@ import { ok, err } from "@/lib/api-response";
 import { logAuditEvent } from "@/lib/audit";
 import { getClientIp } from "@/lib/device-auth";
 
+export const dynamic = "force-dynamic";
+
 const Schema = z.object({
   pairingCode: z.string().min(4).max(64),
   deviceName: z.string().max(128).optional(),

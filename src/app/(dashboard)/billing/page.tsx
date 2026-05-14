@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { monthlyTotalCents, unitPriceForBoardCount } from "@/lib/pricing";
 
+export const dynamic = "force-dynamic";
+
 interface BillingInfo {
   status: string;
   boardCount: number;
