@@ -1,0 +1,1724 @@
+﻿<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SKYLIGHT 100</title>
+<meta name="theme-color" content="#171614">
+<style>
+:root,[data-theme="light"]{
+  --color-bg:#f7f6f2;--color-surface:#f9f8f5;--color-surface-2:#fbfbf9;
+  --color-surface-offset:#f3f0ec;--color-surface-dynamic:#e6e4df;--color-border:#d4d1ca;
+  --color-text:#28251d;--color-text-muted:#7a7974;--color-text-faint:#bab9b4;
+  --color-primary:#01696f;--color-primary-hover:#0c4e54;--color-primary-hl:#cedcd8;
+  --color-success:#437a22;--color-warning:#d19900;--color-error:#a12c7b;--color-blue:#006494;
+  --shadow-sm:0 1px 2px oklch(0.2 0.01 80/0.06);
+  --shadow-md:0 8px 22px oklch(0.2 0.01 80/0.10);
+  --shadow-lg:0 18px 40px oklch(0.2 0.01 80/0.14);
+}
+[data-theme="dark"]{
+  --color-bg:#171614;--color-surface:#1c1b19;--color-surface-2:#201f1d;
+  --color-surface-offset:#262422;--color-surface-dynamic:#2d2c2a;--color-border:#393836;
+  --color-text:#cdccca;--color-text-muted:#979591;--color-text-faint:#666460;
+  --color-primary:#4f98a3;--color-primary-hover:#227f8b;--color-primary-hl:#313b3b;
+  --color-success:#6daa45;--color-warning:#edb336;--color-error:#d163a7;--color-blue:#5591c7;
+  --shadow-sm:0 2px 6px oklch(0 0 0/.2);
+  --shadow-md:0 10px 24px oklch(0 0 0/.34);
+  --shadow-lg:0 20px 48px oklch(0 0 0/.44);
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme]){
+  --color-bg:#171614;--color-surface:#1c1b19;--color-surface-2:#201f1d;
+  --color-surface-offset:#262422;--color-surface-dynamic:#2d2c2a;--color-border:#393836;
+  --color-text:#cdccca;--color-text-muted:#979591;--color-text-faint:#666460;
+  --color-primary:#4f98a3;--color-primary-hover:#227f8b;--color-primary-hl:#313b3b;
+  --color-success:#6daa45;--color-warning:#edb336;--color-error:#d163a7;--color-blue:#5591c7;
+}}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:none;text-size-adjust:none;background:var(--color-bg);scroll-behavior:smooth}
+body{min-height:100dvh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;font-size:clamp(1rem,.95rem + .25vw,1.0625rem);line-height:1.5;color:var(--color-text);background:var(--color-bg);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+img{display:block;max-width:100%}
+a,button,[role="button"],input,select{transition:color .18s,background .18s,border-color .18s,box-shadow .18s,opacity .18s,transform .14s}
+:focus-visible{outline:2px solid var(--color-primary);outline-offset:3px;border-radius:6px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+.app{max-width:580px;margin:0 auto;min-height:100dvh;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);display:grid;grid-template-rows:auto 1fr auto;gap:.75rem}
+.topbar{position:sticky;top:0;z-index:10;padding:.5rem 1rem 0;background:linear-gradient(to bottom,var(--color-bg) 82%,transparent);backdrop-filter:blur(16px)}
+.screen{scroll-margin-top:92px}
+@media(max-width:430px){.topbar{position:static;padding:.5rem 1rem 0}.main{padding-top:.25rem}.screen{scroll-margin-top:0}}
+.main{padding:0 1rem .5rem;display:grid;gap:.75rem}
+
+.panel{background:color-mix(in oklab,var(--color-surface) 92%,transparent);border:1px solid color-mix(in oklab,var(--color-text) 8%,transparent);border-radius:20px;box-shadow:var(--shadow-md);backdrop-filter:blur(16px)}
+.section-card{padding:1rem;display:grid;gap:.75rem}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:.75rem}
+.section-title{font-size:clamp(1.125rem,1rem + .75vw,1.4rem);font-weight:700;letter-spacing:-.02em}
+.tiny{font-size:.75rem;color:var(--color-text-muted)}
+.label{font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--color-text-muted);font-weight:600}
+
+/* Hero */
+.hero{padding:1rem}
+.brand{display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem}
+.brand-left{display:flex;align-items:center;gap:.75rem;flex:1;min-width:0}
+.title-block{min-width:0;display:grid;gap:3px}
+h1{font-size:clamp(1.65rem,1.45rem + 1vw,2.4rem);line-height:1;letter-spacing:-.05em;font-weight:700}
+.brand-sub{color:var(--color-text-muted);font-size:.875rem}
+.brand-byline{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--color-primary);font-weight:700}
+.brand-right{display:flex;flex-direction:column;align-items:flex-end;gap:.4rem;flex-shrink:0}
+.icon-toggle{width:38px;height:38px;border-radius:12px;background:var(--color-surface-offset);border:1px solid color-mix(in oklab,var(--color-text) 10%,transparent);display:grid;place-items:center;color:var(--color-text-muted)}
+.icon-toggle:hover{color:var(--color-text);border-color:color-mix(in oklab,var(--color-primary) 50%,transparent)}
+.live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--color-text-faint);transition:background .2s,box-shadow .2s}
+.live-dot.live{background:var(--color-success);box-shadow:0 0 0 4px color-mix(in oklab,var(--color-success) 18%,transparent)}
+.live-dot.stale{background:var(--color-warning)}
+.live-dot.dead{background:var(--color-error)}
+.live-label{font-size:.7rem;color:var(--color-text-muted);display:flex;align-items:center;gap:.4rem}
+
+.status-row{display:grid;grid-template-columns:1.15fr .85fr;gap:.75rem;margin-top:.75rem}
+.clock-card,.sun-card{padding:.875rem;background:linear-gradient(180deg,var(--color-surface-2),var(--color-surface-offset));border-radius:16px;border:1px solid color-mix(in oklab,var(--color-text) 8%,transparent)}
+.clock{font-size:2.1rem;font-weight:700;letter-spacing:-.05em;margin-top:.5rem;font-variant-numeric:tabular-nums}
+.date{margin-top:.25rem;color:var(--color-text-muted);font-size:.875rem}
+.sun-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.75rem}
+.sun-item{padding:.625rem;border-radius:12px;background:color-mix(in oklab,var(--color-surface-offset) 88%,transparent)}
+.sun-item .relay-name{font-variant-numeric:tabular-nums}
+
+.chip-row{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.75rem}
+.chip{padding:.3rem .6rem;border-radius:999px;background:color-mix(in oklab,var(--color-surface-offset) 90%,transparent);font-size:.7rem;color:var(--color-text-muted);border:1px solid color-mix(in oklab,var(--color-text) 10%,transparent);font-weight:600;letter-spacing:.02em}
+.chip.good{border-color:color-mix(in oklab,var(--color-success) 40%,transparent);color:var(--color-success)}
+.chip.warn{border-color:color-mix(in oklab,var(--color-warning) 40%,transparent);color:var(--color-warning)}
+.chip.info{border-color:color-mix(in oklab,var(--color-blue) 40%,transparent);color:var(--color-blue)}
+
+.screen{display:none;gap:.75rem}
+.screen.active{display:grid;animation:fadeUp .25s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* Relay cards */
+.relay-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+article.relay-card{padding:.875rem;border-radius:16px;background:linear-gradient(180deg,var(--color-surface-2),var(--color-surface-offset));border:1px solid color-mix(in oklab,var(--color-text) 10%,transparent);display:grid;gap:.5rem;position:relative;overflow:hidden;transition:border-color .18s,transform .18s,box-shadow .18s}
+article.relay-card:hover{transform:translateY(-1px);box-shadow:var(--shadow-md)}
+article.relay-card.on{border-color:color-mix(in oklab,var(--color-success) 40%,transparent);box-shadow:inset 0 0 0 1px color-mix(in oklab,var(--color-success) 18%,transparent)}
+article.relay-card.on::before{content:"";position:absolute;inset:auto -20px -55px auto;width:110px;height:110px;border-radius:50%;background:color-mix(in oklab,var(--color-success) 18%,transparent);filter:blur(12px);pointer-events:none}
+.relay-top{display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;position:relative;z-index:1}
+.relay-name{font-weight:700}
+.relay-meta{font-size:.72rem;color:var(--color-text-muted);margin-top:2px;display:flex;align-items:center;gap:.3rem}
+.state-pill{padding:.25rem .55rem;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:color-mix(in oklab,var(--color-text) 10%,transparent);color:var(--color-text-muted)}
+.state-pill.on{background:color-mix(in oklab,var(--color-success) 24%,transparent);color:var(--color-success)}
+.state-pill.off{background:color-mix(in oklab,var(--color-error) 18%,transparent);color:var(--color-error)}
+.relay-state{font-size:1.35rem;font-weight:700;letter-spacing:-.04em;position:relative;z-index:1;font-variant-numeric:tabular-nums}
+.relay-mode-tag{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--color-text-muted);font-weight:700;position:relative;z-index:1}
+.btn-row{display:flex;gap:.5rem;flex-wrap:wrap;position:relative;z-index:1}
+
+/* Buttons */
+.btn{min-height:42px;padding:.55rem .875rem;border-radius:12px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:.4rem;background:var(--color-surface-offset);border:1px solid color-mix(in oklab,var(--color-text) 10%,transparent);font-size:.8125rem;letter-spacing:.01em}
+.btn:hover{border-color:color-mix(in oklab,var(--color-primary) 40%,transparent)}
+.btn.primary{background:var(--color-primary);color:white;border-color:transparent}
+.btn.primary:hover{background:var(--color-primary-hover);border-color:transparent}
+.btn.soft{background:color-mix(in oklab,var(--color-surface-offset) 86%,transparent)}
+.btn.soft.active-mode-auto{background:color-mix(in oklab,var(--color-primary) 24%,var(--color-surface-offset));border-color:color-mix(in oklab,var(--color-primary) 30%,transparent)}
+.btn.soft.active-mode-on{background:color-mix(in oklab,var(--color-success) 24%,var(--color-surface-offset));border-color:color-mix(in oklab,var(--color-success) 34%,transparent);color:var(--color-success)}
+.btn.soft.active-mode-off{background:color-mix(in oklab,var(--color-error) 20%,var(--color-surface-offset));border-color:color-mix(in oklab,var(--color-error) 28%,transparent);color:var(--color-error)}
+.btn.warn{background:color-mix(in oklab,var(--color-warning) 14%,var(--color-surface-offset));border-color:color-mix(in oklab,var(--color-warning) 30%,transparent);color:var(--color-warning)}
+.btn.danger{background:color-mix(in oklab,var(--color-error) 12%,var(--color-surface-offset));border-color:color-mix(in oklab,var(--color-error) 28%,transparent);color:var(--color-error)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:active{transform:scale(.97)}
+.btn svg{width:14px;height:14px}
+
+/* KPIs */
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem}
+.kpi{padding:.875rem;border-radius:16px;background:linear-gradient(180deg,var(--color-surface-2),var(--color-surface-offset));border:1px solid color-mix(in oklab,var(--color-text) 10%,transparent)}
+.kpi-value{font-size:1.5rem;font-weight:700;letter-spacing:-.04em;margin-top:.4rem;font-variant-numeric:tabular-nums}
+
+/* Stepper */
+.stepper{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.75rem 1rem;border-radius:16px;background:linear-gradient(180deg,var(--color-surface-2),var(--color-surface-offset));border:1px solid color-mix(in oklab,var(--color-text) 10%,transparent)}
+.stepper-controls{display:flex;align-items:center;gap:.5rem}
+.icon-btn{width:42px;height:42px;border-radius:12px;background:var(--color-surface-offset);border:1px solid color-mix(in oklab,var(--color-text) 10%,transparent);font-size:1.2rem;display:flex;align-items:center;justify-content:center;font-weight:600}
+.icon-btn:hover{border-color:color-mix(in oklab,var(--color-primary) 40%,transparent);color:var(--color-primary)}
+.icon-btn:active{transform:scale(.93)}
+
+/* Control list */
+.control-group{display:grid;gap:.875rem}
+.control-relay-list{display:grid;gap:.6rem}
+.control-relay{padding:.75rem .875rem;border-radius:14px;background:linear-gradient(180deg,var(--color-surface-2),var(--color-surface-offset));border:1px solid color-mix(in oklab,var(--color-text) 10%,transparent);display:grid;gap:.6rem;transition:border-color .18s}
+.control-relay.on{border-color:color-mix(in oklab,var(--color-success) 38%,transparent)}
+.control-relay-head{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.control-relay-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
+.status-line{display:flex;align-items:center;gap:.45rem;font-size:.72rem;color:var(--color-text-muted);margin-top:2px}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--color-text-faint)}
+.status-dot.on{background:var(--color-success);box-shadow:0 0 0 4px color-mix(in oklab,var(--color-success) 16%,transparent)}
+
+/* Log */
+.log-list{display:grid;gap:.5rem}
+.log-item{padding:.7rem .8rem;border-radius:12px;background:linear-gradient(180deg,var(--color-surface-2),var(--color-surface-offset));border:1px solid color-mix(in oklab,var(--color-text) 10%,transparent);display:grid;gap:4px}
+.log-item.level-warn{border-color:color-mix(in oklab,var(--color-warning) 30%,transparent)}
+.log-item.level-error,.log-item.level-critical{border-color:color-mix(in oklab,var(--color-error) 30%,transparent)}
+.log-top{display:flex;justify-content:space-between;gap:.5rem;font-size:.72rem;color:var(--color-text-muted);flex-wrap:wrap;align-items:center}
+.tag{padding:.15rem .45rem;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.tag.debug{background:color-mix(in oklab,var(--color-text-faint) 30%,transparent);color:var(--color-text-faint)}
+.tag.info{background:color-mix(in oklab,var(--color-blue) 24%,transparent);color:var(--color-blue)}
+.tag.warn{background:color-mix(in oklab,var(--color-warning) 24%,transparent);color:var(--color-warning)}
+.tag.error,.tag.critical{background:color-mix(in oklab,var(--color-error) 24%,transparent);color:var(--color-error)}
+.log-empty{text-align:center;color:var(--color-text-muted);padding:2rem;font-size:.875rem}
+.log-msg{font-size:.85rem;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.78rem;line-height:1.45;color:var(--color-text)}
+
+/* Fields */
+.field{display:grid;gap:6px}
+.field input,.field select{width:100%;min-height:42px;padding:.65rem .875rem;border-radius:12px;background:linear-gradient(180deg,var(--color-surface-2),var(--color-surface-offset));border:1px solid color-mix(in oklab,var(--color-text) 12%,transparent);color:var(--color-text)}
+.field input:focus,.field select:focus{outline:2px solid var(--color-primary);outline-offset:2px;border-color:var(--color-primary)}
+.btn:focus-visible,.icon-btn:focus-visible,.nav-btn:focus-visible{outline:2px solid var(--color-primary);outline-offset:3px}
+.settings-grid{display:grid;gap:.75rem}
+.inline-2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.status-msg{font-size:.75rem;color:var(--color-text-muted);min-height:1.2em}
+.status-msg.ok{color:var(--color-success)}
+.status-msg.err{color:var(--color-error)}
+.select-styled{min-height:40px;padding:.5rem .75rem;border-radius:10px;background:var(--color-surface-offset);border:1px solid color-mix(in oklab,var(--color-text) 12%,transparent);flex:1;max-width:200px;color:var(--color-text)}
+
+/* Banners */
+.banner{display:none;padding:.65rem .85rem;border-radius:12px;font-size:.78rem;gap:.5rem;align-items:center;line-height:1.4;margin-bottom:.5rem}
+.banner.show{display:flex}
+.banner.warn{background:color-mix(in oklab,var(--color-warning) 14%,var(--color-surface-offset));border:1px solid color-mix(in oklab,var(--color-warning) 30%,transparent);color:var(--color-warning)}
+.banner.info{background:color-mix(in oklab,var(--color-blue) 10%,var(--color-surface-offset));border:1px solid color-mix(in oklab,var(--color-blue) 28%,transparent);color:var(--color-blue)}
+.banner.success{background:color-mix(in oklab,var(--color-success) 12%,var(--color-surface-offset));border:1px solid color-mix(in oklab,var(--color-success) 28%,transparent);color:var(--color-success)}
+.banner.error{background:color-mix(in oklab,var(--color-error) 14%,var(--color-surface-offset));border:1px solid color-mix(in oklab,var(--color-error) 30%,transparent);color:var(--color-error)}
+.banner-ack-btn{margin-left:auto;padding:.2rem .65rem;border-radius:8px;border:1px solid currentColor;background:transparent;color:inherit;font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap;opacity:.85;transition:opacity .15s}
+.banner-ack-btn:hover{opacity:1}
+.banner-ack-btn:disabled{opacity:.4;cursor:default}
+
+/* Schedule */
+.sched-block{display:grid;gap:.75rem}
+.sched-card{padding:1rem;border-radius:16px;background:linear-gradient(180deg,var(--color-surface-2),var(--color-surface-offset));border:1px solid color-mix(in oklab,var(--color-text) 10%,transparent);display:grid;gap:.875rem}
+.sched-card-title{font-weight:700;font-size:.95rem;display:flex;align-items:center;gap:.5rem}
+.sched-row{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap}
+.toggle-switch{position:relative;display:inline-flex;align-items:center;gap:.5rem;cursor:pointer;user-select:none}
+.toggle-switch input{position:absolute;opacity:0;width:0;height:0}
+.toggle-track{width:44px;height:24px;border-radius:999px;background:var(--color-surface-offset);border:1px solid color-mix(in oklab,var(--color-text) 14%,transparent);transition:.2s;position:relative;flex-shrink:0}
+.toggle-track::after{content:"";position:absolute;width:18px;height:18px;border-radius:50%;background:var(--color-text-muted);top:2px;left:2px;transition:.2s}
+.toggle-switch input:checked+.toggle-track{background:color-mix(in oklab,var(--color-primary) 30%,var(--color-surface-offset));border-color:var(--color-primary)}
+.toggle-switch input:checked+.toggle-track::after{background:var(--color-primary);transform:translateX(20px)}
+.toggle-label{font-size:.875rem;color:var(--color-text-muted)}
+.sched-note{font-size:.75rem;color:var(--color-text-muted);padding:.55rem .75rem;border-radius:10px;background:color-mix(in oklab,var(--color-primary) 10%,transparent);border:1px solid color-mix(in oklab,var(--color-primary) 20%,transparent);line-height:1.5}
+.sched-note.warn-note{background:color-mix(in oklab,var(--color-warning) 10%,transparent);border-color:color-mix(in oklab,var(--color-warning) 22%,transparent);color:var(--color-warning)}
+.sched-note.success-note{background:color-mix(in oklab,var(--color-success) 10%,transparent);border-color:color-mix(in oklab,var(--color-success) 22%,transparent);color:var(--color-success)}
+.offset-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;align-items:end}
+.window-type-row{display:flex;gap:.5rem}
+.window-type-btn{flex:1;min-height:40px;border-radius:10px;font-size:.8rem;font-weight:600;border:1px solid color-mix(in oklab,var(--color-text) 12%,transparent);background:var(--color-surface-offset);color:var(--color-text-muted);transition:.18s}
+.window-type-btn.active{background:color-mix(in oklab,var(--color-primary) 24%,var(--color-surface-offset));border-color:var(--color-primary);color:var(--color-text)}
+.time-window-fixed{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.save-sched-btn{margin-top:.25rem}
+
+/* Divider */
+.divider{height:1px;background:var(--color-border);margin:.25rem 0}
+
+/* Settings section */
+.settings-section-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.16em;color:var(--color-text-faint);padding:.25rem 0;margin-top:.25rem;font-weight:700}
+
+/* nav */
+.footer-nav{position:sticky;bottom:0;padding-bottom:max(.75rem,env(safe-area-inset-bottom));background:linear-gradient(to top,var(--color-bg) 78%,transparent)}
+.nav-shell{padding:8px;background:color-mix(in oklab,var(--color-surface) 94%,transparent);border:1px solid color-mix(in oklab,var(--color-text) 10%,transparent);border-radius:22px;display:grid;grid-template-columns:repeat(5,1fr);gap:6px;box-shadow:var(--shadow-lg);backdrop-filter:blur(16px)}
+.nav-btn{min-height:54px;border-radius:14px;color:var(--color-text-muted);display:grid;place-items:center;gap:3px;font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.nav-btn svg{width:20px;height:20px;stroke-width:1.8}
+.nav-btn.active{background:color-mix(in oklab,var(--color-primary) 22%,transparent);color:var(--color-text)}
+.nav-btn.active svg{stroke:var(--color-primary)}
+.nav-btn:active{transform:scale(.93)}
+
+/* Toast */
+.toast{position:fixed;bottom:calc(90px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:12px;padding:.6rem 1rem;font-size:.8rem;box-shadow:var(--shadow-lg);white-space:nowrap;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;z-index:100}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.ok{border-color:color-mix(in oklab,var(--color-success) 40%,transparent);color:var(--color-success)}
+.toast.err{border-color:color-mix(in oklab,var(--color-error) 40%,transparent);color:var(--color-error)}
+
+/* Skeleton */
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.skeleton{background:linear-gradient(90deg,var(--color-surface-offset) 25%,var(--color-surface-dynamic) 50%,var(--color-surface-offset) 75%);background-size:200% 100%;animation:shimmer 1.5s ease-in-out infinite;border-radius:8px}
+
+@media(max-width:430px){
+  .relay-grid,.kpi-grid{grid-template-columns:1fr 1fr}
+  .status-row{grid-template-columns:1fr}
+  .control-relay-actions{grid-template-columns:1fr}
+  .control-relay-actions .btn{width:100%}
+  .offset-row,.time-window-fixed{grid-template-columns:1fr}
+  .kpi-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(min-width:620px){
+  .app{max-width:760px}
+  .relay-grid{grid-template-columns:repeat(3,1fr)}
+}
+
+/* Schedule target picker */
+.sched-target-picker{display:flex;flex-wrap:wrap;gap:.375rem}
+.sched-target-btn{padding:.4rem .75rem;border-radius:999px;font-size:.75rem;font-weight:600;border:1px solid color-mix(in oklab,var(--color-text) 12%,transparent);background:var(--color-surface-offset);color:var(--color-text-muted);cursor:pointer;transition:all .18s;min-height:34px;line-height:1;display:inline-flex;align-items:center}
+.sched-target-btn.sel{background:color-mix(in oklab,var(--color-primary) 24%,var(--color-surface-offset));border-color:var(--color-primary);color:var(--color-text)}
+.sched-target-btn:active{transform:scale(.95)}
+
+.last-update{font-size:.7rem;color:var(--color-text-muted);font-variant-numeric:tabular-nums}
+
+/* PIN prompt modal */
+#pinModal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;animation:pinFadeIn .18s ease-out}
+#pinModal .pin-backdrop{position:absolute;inset:0;background:color-mix(in oklab,#000 55%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#pinModal .pin-dialog{position:relative;width:100%;max-width:360px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:.6rem;padding:1.5rem 1.25rem;border-radius:20px;background:var(--color-surface);border:1px solid color-mix(in oklab,var(--color-text) 10%,transparent);box-shadow:0 20px 60px color-mix(in oklab,#000 45%,transparent),0 0 0 1px color-mix(in oklab,var(--color-primary) 10%,transparent);animation:pinPop .22s cubic-bezier(.2,.9,.3,1.2)}
+#pinModal .pin-icon{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:color-mix(in oklab,var(--color-primary) 18%,var(--color-surface-offset));color:var(--color-primary);margin-bottom:.25rem;box-shadow:0 0 0 6px color-mix(in oklab,var(--color-primary) 8%,transparent)}
+#pinModal .pin-title{font-size:1.05rem;font-weight:700;color:var(--color-text);letter-spacing:.01em}
+#pinModal .pin-sub{font-size:.825rem;color:var(--color-text-muted);line-height:1.4;max-width:30ch}
+#pinModal .pin-input{width:100%;margin-top:.5rem;padding:.85rem 1rem;font-size:1.4rem;font-weight:600;text-align:center;letter-spacing:.4em;font-variant-numeric:tabular-nums;border-radius:14px;border:1px solid color-mix(in oklab,var(--color-text) 14%,transparent);background:var(--color-surface-offset);color:var(--color-text);outline:none;transition:border-color .15s,box-shadow .15s}
+#pinModal .pin-input::placeholder{letter-spacing:.3em;color:color-mix(in oklab,var(--color-text-muted) 70%,transparent)}
+#pinModal .pin-input:focus{border-color:var(--color-primary);box-shadow:0 0 0 4px color-mix(in oklab,var(--color-primary) 22%,transparent)}
+#pinModal .pin-error{min-height:1.1rem;font-size:.78rem;font-weight:500;color:var(--color-error,#ef4444);margin-top:-.15rem}
+#pinModal .pin-error:empty{display:none}
+#pinModal .pin-actions{display:flex;gap:.5rem;width:100%;margin-top:.4rem}
+#pinModal .pin-actions .btn{flex:1;min-height:42px;justify-content:center}
+@keyframes pinFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pinPop{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:480px){#pinModal .pin-dialog{padding:1.25rem 1rem;border-radius:18px}#pinModal .pin-input{font-size:1.25rem}}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <section class="panel hero">
+      <div class="banner warn" id="rtcBanner">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="rtcFaultText">RTC time not set - go to Settings - Set Clock</span>
+        <button type="button" id="rtcAckBtn" class="banner-ack-btn" style="display:none">Acknowledge OK</button>
+      </div>
+      <div class="banner info" id="ntpBanner">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        NTP synced - clock is accurate
+      </div>
+      <div class="banner warn" id="offlineBanner">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/><path d="M10.71 5.05A16 16 0 0 1 22.58 9"/><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+        Lost contact with controller - retrying...
+      </div>
+
+      <div class="brand">
+        <div class="brand-left">
+          <svg width="38" height="38" viewBox="0 0 38 38" fill="none" aria-label="SKYLIGHT 100 logo">
+            <circle cx="19" cy="19" r="18" stroke="var(--color-primary)" stroke-width="1.5" fill="none"/>
+            <circle cx="19" cy="19" r="6" fill="var(--color-primary)" opacity=".9"/>
+            <g stroke="var(--color-primary)" stroke-width="1.5" stroke-linecap="round" opacity=".6">
+              <line x1="19" y1="4" x2="19" y2="8"/><line x1="19" y1="30" x2="19" y2="34"/>
+              <line x1="4" y1="19" x2="8" y2="19"/><line x1="30" y1="19" x2="34" y2="19"/>
+              <line x1="8.5" y1="8.5" x2="11.3" y2="11.3"/><line x1="26.7" y1="26.7" x2="29.5" y2="29.5"/>
+              <line x1="29.5" y1="8.5" x2="26.7" y2="11.3"/><line x1="11.3" y1="26.7" x2="8.5" y2="29.5"/>
+            </g>
+          </svg>
+          <div class="title-block">
+            <h1>SKYLIGHT 100</h1>
+            <div class="brand-sub">Astronomical lighting controller</div>
+            <div class="brand-byline">by Electron Automation</div>
+          </div>
+        </div>
+        <div class="brand-right">
+          <button class="icon-toggle" id="themeToggle" type="button" aria-label="Toggle theme">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </button>
+          <div class="live-label"><span class="live-dot" id="liveDot"></span><span id="liveText">connecting...</span></div>
+        </div>
+      </div>
+
+      <div class="status-row">
+        <div class="clock-card">
+          <div class="label">Current Time</div>
+          <div class="clock" id="clockValue">--:--:--</div>
+          <div class="date" id="dateValue">Waiting for RTC...</div>
+        </div>
+        <div class="sun-card">
+          <div class="label">Sun Events</div>
+          <div class="sun-grid">
+            <div class="sun-item"><div class="tiny">Sunrise</div><div class="relay-name" id="sunriseValue">--:--</div></div>
+            <div class="sun-item"><div class="tiny">Sunset</div><div class="relay-name" id="sunsetValue">--:--</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="chip-row" id="chipRow">
+        <div class="chip" id="apChip">AP --</div>
+        <div class="chip" id="staChip" style="display:none">STA --</div>
+        <div class="chip" id="clientsChip">Clients 0</div>
+        <div class="chip" id="ntpChip">NTP --</div>
+        <div class="chip" id="memChip">MEM --</div>
+        <div class="chip" id="fwChip">FW --</div>
+      </div>
+    </section>
+  </header>
+
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <section class="screen active" id="screen-dashboard">
+      <div class="panel section-card">
+        <div class="section-head">
+          <div><div class="section-title">Relays</div><div class="tiny" id="relayCountLabel">Live status overview</div></div>
+          <button class="btn" id="refreshBtn" type="button" aria-label="Refresh">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            Refresh
+          </button>
+        </div>
+        <div class="relay-grid" id="relayGrid"></div>
+        <div class="last-update" id="lastUpdate"></div>
+      </div>
+      <div class="panel section-card">
+        <div class="section-head"><div><div class="section-title">Runtime</div><div class="tiny">Current snapshot</div></div></div>
+        <div class="kpi-grid">
+          <div class="kpi"><div class="label">Lights ON</div><div class="kpi-value" id="lightsOnValue">0</div></div>
+          <div class="kpi"><div class="label">Fans ON</div><div class="kpi-value" id="fansOnValue">0</div></div>
+          <div class="kpi"><div class="label">Load</div><div class="kpi-value" id="loadValue">0W</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTROL -->
+    <section class="screen" id="screen-control">
+      <div class="panel section-card">
+        <div class="section-head">
+          <div><div class="section-title">Manual Override</div><div class="tiny">Relay-level control</div></div>
+        </div>
+        <div class="stepper">
+          <div><div class="label">Override Timer</div><div class="relay-name"><span id="overrideValue">30</span> min <span class="tiny">(0 = indefinite)</span></div></div>
+          <div class="stepper-controls">
+            <button class="icon-btn" id="overrideDown" type="button" aria-label="Decrease">-</button>
+            <button class="icon-btn" id="overrideUp"   type="button" aria-label="Increase">+</button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn soft" id="allLightsOn"   type="button">Lights ON</button>
+          <button class="btn soft" id="allLightsOff"  type="button">Lights OFF</button>
+          <button class="btn soft" id="allLightsAuto" type="button">Lights AUTO</button>
+          <button class="btn soft" id="allFansOn"     type="button">Fans ON</button>
+          <button class="btn soft" id="allFansOff"    type="button">Fans OFF</button>
+          <button class="btn soft" id="allFansAuto"   type="button">Fans AUTO</button>
+        </div>
+        <div class="control-group">
+          <div><div class="label" style="margin-bottom:.4rem">Lights</div><div class="control-relay-list" id="lightControlList"></div></div>
+          <div><div class="label" style="margin-bottom:.4rem">Fans</div><div class="control-relay-list" id="fanControlList"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCHEDULE -->
+    <section class="screen" id="screen-schedule">
+      <div class="panel section-card">
+        <div class="section-head">
+          <div><div class="section-title">Relay Scheduling</div><div class="tiny">Schedule a group or a single relay</div></div>
+        </div>
+        <div class="sched-card">
+          <div>
+            <div class="label" style="margin-bottom:.5rem">Schedule target</div>
+            <div id="scheduleTargetPicker" class="sched-target-picker"></div>
+          </div>
+          <div class="sched-note success-note" id="scheduleTargetHelp">Choose a light group, fan group, or one relay.</div>
+        </div>
+
+        <div class="sched-card" id="scheduleLightsCard">
+          <div class="sched-row">
+            <div class="sched-card-title">Astronomical schedule</div>
+            <label class="toggle-switch" aria-label="Enable selected schedule">
+              <input type="checkbox" id="lightsSchedEnabled" checked>
+              <div class="toggle-track"></div>
+            </label>
+          </div>
+          <div class="sched-row">
+            <span class="label">Turn ON trigger</span>
+            <select id="lightsOnTrigger" class="select-styled">
+              <option value="0">At Sunset</option>
+              <option value="1">At Sunrise</option>
+              <option value="2">Fixed Time</option>
+            </select>
+          </div>
+          <div class="offset-row" id="lightsOnOffsetRow">
+            <div class="field"><label class="label" for="lightsOnOffset">Offset (min)</label><input type="number" id="lightsOnOffset" value="0" min="-720" max="720" step="5"></div>
+            <div style="padding-bottom:.25rem"><div class="sched-note" id="lightsOnOffsetNote">Relay ON at sunset +0 min</div></div>
+          </div>
+          <div class="field" id="lightsOnFixedRow" style="display:none"><label class="label" for="lightsOnFixed">Fixed ON Time</label><input type="time" id="lightsOnFixed" value="19:00"></div>
+          <div class="sched-row">
+            <span class="label">Turn OFF trigger</span>
+            <select id="lightsOffTrigger" class="select-styled">
+              <option value="1">At Sunrise</option>
+              <option value="0">At Sunset</option>
+              <option value="2">Fixed Time</option>
+            </select>
+          </div>
+          <div class="offset-row" id="lightsOffOffsetRow">
+            <div class="field"><label class="label" for="lightsOffOffset">Offset (min)</label><input type="number" id="lightsOffOffset" value="0" min="-720" max="720" step="5"></div>
+            <div style="padding-bottom:.25rem"><div class="sched-note" id="lightsOffOffsetNote">Relay OFF at sunrise +0 min</div></div>
+          </div>
+          <div class="field" id="lightsOffFixedRow" style="display:none"><label class="label" for="lightsOffFixed">Fixed OFF Time</label><input type="time" id="lightsOffFixed" value="06:30"></div>
+          <button class="btn primary save-sched-btn" id="saveLightsSchedBtn" type="button">Save Schedule</button>
+          <div class="status-msg" id="lightsSchedMsg"></div>
+        </div>
+
+        <div class="sched-card" id="scheduleFansCard">
+          <div class="sched-row">
+            <div class="sched-card-title">Fan cycle schedule</div>
+            <label class="toggle-switch" aria-label="Enable selected fan schedule">
+              <input type="checkbox" id="fansSchedEnabled" checked>
+              <div class="toggle-track"></div>
+            </label>
+          </div>
+          <div class="stepper">
+            <div><div class="label">Hours per day</div><div class="relay-name"><span id="fanHoursValue">5</span> hrs / day</div></div>
+            <div class="stepper-controls"><button class="icon-btn" id="fanHoursDown" type="button" aria-label="-">-</button><button class="icon-btn" id="fanHoursUp" type="button" aria-label="+">+</button></div>
+          </div>
+          <div class="stepper">
+            <div><div class="label">Cycle interval</div><div class="relay-name">Every <span id="fanIntervalValue">15</span> min</div></div>
+            <div class="stepper-controls"><button class="icon-btn" id="fanIntervalDown" type="button" aria-label="-">-</button><button class="icon-btn" id="fanIntervalUp" type="button" aria-label="+">+</button></div>
+          </div>
+          <div class="window-type-row"><button class="window-type-btn active" id="fanWindowSun" type="button">Sunrise - Sunset</button><button class="window-type-btn" id="fanWindowFixed" type="button">Fixed Hours</button></div>
+          <div id="fanSunOffsetRow" class="offset-row">
+            <div class="field"><label class="label" for="fanSunriseOffset">Sunrise offset (min)</label><input type="number" id="fanSunriseOffset" value="0" min="-720" max="720" step="5"></div>
+            <div class="field"><label class="label" for="fanSunsetOffset">Sunset offset (min)</label><input type="number" id="fanSunsetOffset" value="0" min="-720" max="720" step="5"></div>
+          </div>
+          <div class="sched-note" id="fanSunOffsetNote">Fan window starts at sunrise +0 min and ends at sunset +0 min</div>
+          <div id="fanFixedTimeRow" style="display:none"><div class="time-window-fixed" style="margin-top:.75rem"><div class="field"><label class="label" for="fanWindowStart">Start</label><input type="time" id="fanWindowStart" value="08:00"></div><div class="field"><label class="label" for="fanWindowEnd">End</label><input type="time" id="fanWindowEnd" value="17:00"></div></div></div>
+          <div class="sched-note warn-note">Fan schedules apply to fan relays only.</div>
+          <button class="btn primary save-sched-btn" id="saveFansSchedBtn" type="button">Save Fan Schedule</button>
+          <div class="status-msg" id="fansSchedMsg"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LOG -->
+    <section class="screen" id="screen-log">
+      <div class="panel section-card">
+        <div class="section-head">
+          <div><div class="section-title">Event Log</div><div class="tiny" id="logCountLabel">Loading...</div></div>
+          <div class="btn-row">
+            <button class="btn" id="exportLogBtn" type="button">Export CSV</button>
+            <button class="btn" id="exportRelayLogBtn" type="button">Export Relays</button>
+            <button class="btn danger" id="clearLogBtn" type="button">Clear</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+          <button class="btn soft" id="logFilter-ALL"      type="button" style="min-height:34px;font-size:.72rem">All</button>
+          <button class="btn soft" id="logFilter-RELAY"    type="button" style="min-height:34px;font-size:.72rem">Relay</button>
+          <button class="btn soft" id="logFilter-WARN"     type="button" style="min-height:34px;font-size:.72rem">Warn</button>
+          <button class="btn soft" id="logFilter-ERROR"    type="button" style="min-height:34px;font-size:.72rem">Errors</button>
+          <button class="btn soft" id="logFilter-CRITICAL" type="button" style="min-height:34px;font-size:.72rem">Critical</button>
+        </div>
+        <div class="log-list" id="logList"><div class="log-empty">Loading log...</div></div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="screen" id="screen-settings">
+      <div class="panel section-card">
+        <div class="section-head"><div><div class="section-title">Settings</div><div class="tiny">AP, WiFi &amp; location</div></div></div>
+        <div class="settings-grid">
+
+          <div class="settings-section-label">Access Point</div>
+          <div class="field"><label class="label" for="ssidInput">AP SSID</label><input id="ssidInput" type="text" readonly autocomplete="off"></div>
+          <div class="field"><label class="label" for="passInput">Factory AP Password</label><input id="passInput" type="text" readonly autocomplete="off"></div>
+          <div class="tiny">Factory access point credentials are fixed per device.</div>
+
+          <div class="divider"></div>
+          <div class="settings-section-label">Home WiFi (for NTP sync)</div>
+          <div class="field"><label class="label" for="wifiSsidInput">Home WiFi SSID</label><input id="wifiSsidInput" type="text" placeholder="MyHomeNetwork" autocomplete="off"></div>
+          <div class="field"><label class="label" for="wifiPassInput">Home WiFi Password</label><input id="wifiPassInput" type="password" placeholder="Leave blank to keep current" autocomplete="new-password"></div>
+
+          <div class="divider"></div>
+          <div class="settings-section-label">Cloud Access</div>
+          <div class="sched-card" style="padding:.875rem">
+            <div class="sched-row">
+              <div>
+                <div class="sched-card-title">Remote access</div>
+                <div class="tiny" id="cloudStatusText">Cloud disabled</div>
+              </div>
+              <label class="toggle-switch" aria-label="Enable cloud access">
+                <input type="checkbox" id="cloudEnabledToggle">
+                <div class="toggle-track"></div>
+              </label>
+            </div>
+            <div class="field"><label class="label" for="cloudUrlInput">Cloud URL</label><input id="cloudUrlInput" type="url" placeholder="https://api.example.com" autocomplete="off"></div>
+            <div class="field"><label class="label" for="cloudDeviceNameInput">Device Name</label><input id="cloudDeviceNameInput" type="text" placeholder="Lobby Skylight" autocomplete="off"></div>
+            <div class="field"><label class="label" for="cloudGroupNameInput">Group Name</label><input id="cloudGroupNameInput" type="text" placeholder="Building One" autocomplete="off"></div>
+            <div class="inline-2">
+              <div class="field"><label class="label" for="boardIdInput">Board ID</label><input id="boardIdInput" type="text" readonly autocomplete="off"></div>
+              <div class="field"><label class="label" for="pairingCodeInput">Pairing Code</label><input id="pairingCodeInput" type="text" readonly autocomplete="off"></div>
+            </div>
+            <label class="toggle-switch" aria-label="Push error notifications">
+              <input type="checkbox" id="pushErrorsToggle" checked>
+              <div class="toggle-track"></div>
+              <span class="toggle-label">Push errors to app</span>
+            </label>
+            <div class="btn-row">
+              <button class="btn primary" id="saveCloudBtn" type="button">Save Cloud</button>
+            </div>
+            <div class="tiny">Pairing code is fixed to this board's MAC address and cannot be changed.</div>
+            <div class="status-msg" id="cloudMsg"></div>
+          </div>
+
+          <div class="divider"></div>
+          <div class="settings-section-label">City Preset</div>
+          <div class="field"><label class="label" for="citySelect">Choose city</label><select id="citySelect"><option value="">Custom location</option><option value="loading">Loading cities...</option></select></div>
+          <div class="tiny" id="cityHelpText">Choose a city, then press Save Settings to apply it.</div>
+
+          <div class="divider"></div>
+          <div class="settings-section-label">Location &amp; Time Zone</div>
+          <div class="field"><label class="label" for="cityNameInput">City Name</label><input id="cityNameInput" type="text" placeholder="Milwaukee" autocomplete="off"></div>
+          <div class="inline-2">
+            <div class="field"><label class="label" for="latInput">Latitude</label><input id="latInput" type="number" step="0.0001" placeholder="43.0389"></div>
+            <div class="field"><label class="label" for="lonInput">Longitude</label><input id="lonInput" type="number" step="0.0001" placeholder="-87.9065"></div>
+          </div>
+          <div class="inline-2">
+            <div class="field"><label class="label" for="tzInput">UTC Offset (hrs)</label><input id="tzInput" type="number" step="1" placeholder="-6"></div>
+            <div class="field" style="justify-content:flex-end">
+              <label class="label" style="margin-bottom:.5rem">Auto DST (US)</label>
+              <label class="toggle-switch" aria-label="Auto DST">
+                <input type="checkbox" id="autoDstToggle" checked>
+                <div class="toggle-track"></div>
+                <span class="toggle-label">Enabled</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="btn-row" style="margin-top:.5rem">
+            <button class="btn primary" id="saveSettingsBtn" type="button">Save Settings</button>
+          </div>
+
+          <div class="divider"></div>
+          <div class="settings-section-label">Manual Time</div>
+          <div class="sched-card" style="padding:.875rem">
+            <div class="sched-card-title">Set Clock</div>
+            <div class="tiny">Sets the RTC via <code>/api/time</code>: year, month, day, hour, minute, second.</div>
+            <div class="inline-2" style="margin-top:.5rem">
+              <div class="field"><label class="label" for="manualDate">Date</label><input id="manualDate" type="date"></div>
+              <div class="field"><label class="label" for="manualTime">Time</label><input id="manualTime" type="time" step="1"></div>
+            </div>
+            <div class="btn-row">
+              <button class="btn primary" id="saveManualTimeBtn" type="button">Set Manual Time</button>
+              <button class="btn" id="setTimeBtn" type="button">Use Phone Time</button>
+            </div>
+            <div class="tiny" id="timeHelpText">Tap Use Phone Time for the fastest sync.</div>
+          </div>
+
+          <div class="divider"></div>
+          <div class="settings-section-label">System</div>
+          <div class="btn-row">
+            <button class="btn warn"   id="rebootBtn"       type="button">Reboot</button>
+            <button class="btn danger" id="factoryResetBtn" type="button">Factory Reset</button>
+          </div>
+          <div class="tiny" id="fwInfo">Firmware: <span id="fwVersionText">--</span></div>
+          <div class="status-msg" id="settingsMsg"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer-nav">
+    <nav class="nav-shell" aria-label="Primary navigation">
+      <button class="nav-btn active" data-screen="dashboard" type="button" aria-label="Home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-7h4v7h4a1 1 0 0 0 1-1V10"/></svg><span>Home</span>
+      </button>
+      <button class="nav-btn" data-screen="control" type="button" aria-label="Control">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="9" cy="6" r="2.5" fill="var(--color-bg)"/><circle cx="15" cy="12" r="2.5" fill="var(--color-bg)"/><circle cx="7" cy="18" r="2.5" fill="var(--color-bg)"/></svg><span>Control</span>
+      </button>
+      <button class="nav-btn" data-screen="schedule" type="button" aria-label="Schedule">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="16" y1="3" x2="16" y2="7"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="8" cy="15" r="1.2" fill="currentColor"/><circle cx="12" cy="15" r="1.2" fill="currentColor"/><circle cx="16" cy="15" r="1.2" fill="currentColor"/></svg><span>Schedule</span>
+      </button>
+      <button class="nav-btn" data-screen="log" type="button" aria-label="Log">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/><line x1="8" y1="9" x2="10" y2="9"/></svg><span>Log</span>
+      </button>
+      <button class="nav-btn" data-screen="settings" type="button" aria-label="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 8.92 4.6H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.68 0 1.27.4 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span>
+      </button>
+    </nav>
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// Admin PIN handling
+//   • Firmware checks every authed request against
+//     ADMIN_PIN_STATIC in config.h (set to "4747" at flash time).
+//   • The browser does NOT bake the PIN in. Instead we prompt the
+//     user the first time they trigger a write, cache it for the
+//     tab session, and re-prompt if the server returns 401/403.
+// ============================================================
+
+// State
+const S = {
+  overrideMin: 30,
+  relays: [],
+  log: [],
+  logFilter: 'ALL',
+  fanWindowType: 0,   // 0=sun, 1=fixed
+  fanHours: 5,
+  fanInterval: 15,
+  overrideEndTime: null,
+  overrideCountdownTimer: null,
+  online: false,
+  lastUpdate: 0,
+  consecutiveFails: 0
+};
+
+// API helpers
+const BASE = '';
+let cityPresets = [];
+
+// PIN cache + modal prompt
+let cachedPin = null;
+try { cachedPin = sessionStorage.getItem('skylight.pin') || null; } catch {}
+
+function setCachedPin(p) {
+  cachedPin = p || null;
+  try {
+    if (cachedPin) sessionStorage.setItem('skylight.pin', cachedPin);
+    else           sessionStorage.removeItem('skylight.pin');
+  } catch {}
+}
+
+// Promise-based PIN modal. Resolves with the entered PIN or null on cancel.
+function promptForPin(reason) {
+  return new Promise((resolve) => {
+    const existing = document.getElementById('pinModal');
+    if (existing) existing.remove();
+    const modal = document.createElement('div');
+    modal.id = 'pinModal';
+    modal.innerHTML = `
+      <div class="pin-backdrop"></div>
+      <div class="pin-dialog panel" role="dialog" aria-modal="true" aria-labelledby="pinTitle">
+        <div class="pin-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div class="pin-title" id="pinTitle">Admin PIN required</div>
+        <div class="pin-sub">${reason ? reason : 'Enter the admin PIN to apply this change.'}</div>
+        <input id="pinModalInput" class="pin-input" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="••••" maxlength="16">
+        <div class="pin-error" id="pinModalError"></div>
+        <div class="pin-actions">
+          <button class="btn" id="pinModalCancel" type="button">Cancel</button>
+          <button class="btn primary" id="pinModalSubmit" type="button">Confirm</button>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+
+    const input  = modal.querySelector('#pinModalInput');
+    const submit = modal.querySelector('#pinModalSubmit');
+    const cancel = modal.querySelector('#pinModalCancel');
+    const back   = modal.querySelector('.pin-backdrop');
+    setTimeout(() => input.focus(), 30);
+
+    function done(value) {
+      modal.remove();
+      document.removeEventListener('keydown', onKey);
+      resolve(value);
+    }
+    function onKey(e) {
+      if (e.key === 'Enter')  { e.preventDefault(); submit.click(); }
+      if (e.key === 'Escape') { e.preventDefault(); cancel.click(); }
+    }
+    document.addEventListener('keydown', onKey);
+
+    submit.addEventListener('click', () => {
+      const v = input.value.trim();
+      if (!v) {
+        modal.querySelector('#pinModalError').textContent = 'PIN cannot be empty.';
+        input.focus();
+        return;
+      }
+      done(v);
+    });
+    cancel.addEventListener('click', () => done(null));
+    back.addEventListener('click',   () => done(null));
+  });
+}
+
+async function ensurePin(reason) {
+  if (cachedPin) return cachedPin;
+  const p = await promptForPin(reason);
+  if (p) setCachedPin(p);
+  return p;
+}
+
+function headers(pin, json = false) {
+  const h = {};
+  if (pin)  h['X-Admin-PIN']    = pin;
+  if (json) h['Content-Type']   = 'application/json';
+  return h;
+}
+
+// Core fetch wrapper
+// auth: false - no PIN (read-only).
+// auth: true  - ensure a PIN is cached/asked; on 401/403 invalidate + retry once.
+async function api(path, opts = {}) {
+  const method = (opts.method || 'GET').toUpperCase();
+  const auth   = (opts.auth !== undefined) ? !!opts.auth : (method !== 'GET');
+  const reason = opts.pinReason;
+  const forcePin = !!opts.forcePin;
+
+  let pin = null;
+  if (auth) {
+    if (forcePin) {
+      pin = await promptForPin(reason || 'Enter the admin PIN to save settings.');
+      if (pin) setCachedPin(pin);
+    } else {
+      pin = await ensurePin(reason);
+    }
+  } else {
+    pin = cachedPin;
+  }
+  if (auth && !pin) {
+    return { ok: false, status: 0, cancelled: true, data: { message: 'Cancelled' } };
+  }
+
+  async function doFetch(p) {
+    const { forcePin: _forcePin, pinReason: _pinReason, auth: _auth, ...fetchOpts } = opts;
+    const r = await fetch(BASE + path, {
+      ...fetchOpts,
+      headers: { ...headers(p, opts.body !== undefined), ...(opts.headers || {}) }
+    });
+    const text = await r.text();
+    let data;
+    try { data = JSON.parse(text); } catch { data = text; }
+    return { ok: r.ok, status: r.status, data };
+  }
+
+  try {
+    let res = await doFetch(pin);
+    if (auth && (res.status === 401 || res.status === 403)) {
+      setCachedPin(null);
+      const newPin = await promptForPin('That PIN was rejected. Try again.');
+      if (!newPin) return { ok: false, status: res.status, cancelled: true, data: { message: 'Cancelled' } };
+      setCachedPin(newPin);
+      res = await doFetch(newPin);
+      if (res.status === 401 || res.status === 403) setCachedPin(null);
+    }
+    return res;
+  } catch (e) {
+    return { ok: false, status: 0, data: { message: 'Network error: ' + e.message } };
+  }
+}
+
+function escHtml(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function updateCloudPanel(cloud) {
+  const status = document.getElementById('cloudStatusText');
+  if (!status) return;
+  const enabled = !!cloud.cloudEnabled;
+  const claimed = !!cloud.claimed;
+  const group = cloud.groupName ? ' - ' + cloud.groupName : '';
+  status.textContent = enabled
+    ? (claimed ? 'Claimed' : 'Ready to pair') + group + ' - ' + (cloud.lastCloudStatus || 'Waiting')
+    : 'Cloud disabled';
+  const map = {
+    boardIdInput: cloud.boardId || '',
+    pairingCodeInput: cloud.pairingCode || '',
+    cloudUrlInput: cloud.cloudUrl || '',
+    cloudDeviceNameInput: cloud.deviceName || '',
+    cloudGroupNameInput: cloud.groupName || ''
+  };
+  Object.keys(map).forEach(id => {
+    const el = document.getElementById(id);
+    if (el && document.activeElement !== el) el.value = map[id];
+  });
+  const cloudToggle = document.getElementById('cloudEnabledToggle');
+  if (cloudToggle) cloudToggle.checked = enabled;
+  const pushToggle = document.getElementById('pushErrorsToggle');
+  if (pushToggle) pushToggle.checked = cloud.pushErrorsEnabled !== false;
+}
+
+function fillManualTimeInputsFromNow(){
+  const n = new Date();
+  const pad = v => String(v).padStart(2,'0');
+  const d = document.getElementById('manualDate');
+  const t = document.getElementById('manualTime');
+  if (d) d.value = `${n.getFullYear()}-${pad(n.getMonth()+1)}-${pad(n.getDate())}`;
+  if (t) t.value = `${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`;
+}
+
+async function loadCities(){
+  const sel = document.getElementById('citySelect');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">Loading cities...</option>';
+  const help = document.getElementById('cityHelpText');
+  try {
+    const resp = await api('/api/cities');
+    const data = resp.data || {};
+    const cities = Array.isArray(data.cities) ? data.cities : null;
+    if (!resp.ok || !cities) {
+      sel.innerHTML = '<option value="">Custom location</option>';
+      if (help) help.textContent = 'Could not load city presets. Enter location manually.';
+      return;
+    }
+    cityPresets = cities;
+    const opts = ['<option value="">Custom location</option>'];
+    cityPresets.forEach(c => opts.push(`<option value="${c.index}">${escHtml(c.city)} (${escHtml(c.tzLabel)})</option>`));
+    sel.innerHTML = opts.join('');
+    if (help) help.textContent = 'Choose a city, then press Save Settings to apply it.';
+  } catch {
+    sel.innerHTML = '<option value="">Custom location</option>';
+    if (help) help.textContent = 'City preset request failed. Enter location manually.';
+  }
+}
+
+function applyCityToFields(idxStr){
+  const idx = parseInt(idxStr, 10);
+  const c = cityPresets.find(x => x.index === idx);
+  if (!c) return;
+  document.getElementById('latInput').value = c.lat;
+  document.getElementById('lonInput').value = c.lon;
+  document.getElementById('tzInput').value  = c.tz;
+  document.getElementById('autoDstToggle').checked = !!c.autoDst;
+  const cityNameInput = document.getElementById('cityNameInput');
+  if (cityNameInput) cityNameInput.value = c.city;
+  const help = document.getElementById('cityHelpText');
+  if (help) help.textContent = `Selected ${c.city}. Press Save Settings to apply it.`;
+}
+
+async function postManualRtc(year, month, day, hour, minute, second){
+  const r = await api('/api/time', {
+    method: 'POST',
+    body: JSON.stringify({ year, month, day, hour, minute, second })
+  });
+  const msg  = document.getElementById('settingsMsg');
+  const help = document.getElementById('timeHelpText');
+  if (r.ok) {
+    if (msg)  { msg.textContent = 'RTC updated'; msg.className = 'status-msg ok'; }
+    if (help) help.textContent = `Applied ${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')} ${String(hour).padStart(2,'0')}:${String(minute).padStart(2,'0')}:${String(second).padStart(2,'0')}`;
+    toast('RTC updated', 'ok');
+    await loadStatus();
+  } else {
+    if (msg) { msg.textContent = r.data?.message || 'RTC update failed'; msg.className = 'status-msg err'; }
+    toast(r.data?.message || 'RTC update failed', 'err');
+  }
+}
+
+// Toast
+let toastTimer;
+function toast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.className = 'toast', 2800);
+}
+
+// Theme
+(function(){
+  const d = document.documentElement;
+  const btn = document.getElementById('themeToggle');
+  const stored = localStorage.getItem('skylight.theme');
+  let mode = stored || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light');
+  d.setAttribute('data-theme', mode);
+  btn.addEventListener('click', () => {
+    mode = mode === 'dark' ? 'light' : 'dark';
+    d.setAttribute('data-theme', mode);
+    try { localStorage.setItem('skylight.theme', mode); } catch {}
+  });
+})();
+
+// Navigation
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const screen = document.getElementById('screen-' + id);
+  const btn    = document.querySelector(`.nav-btn[data-screen="${id}"]`);
+  if (screen) screen.classList.add('active');
+  if (btn)    btn.classList.add('active');
+  if (id === 'log'      && typeof loadLog       === 'function') loadLog();
+  if (id === 'schedule' && typeof loadSchedules === 'function') loadSchedules();
+  if (id === 'settings' && typeof loadSettings  === 'function') loadSettings();
+}
+document.querySelectorAll('.nav-btn[data-screen]').forEach(btn => {
+  btn.addEventListener('click', () => showScreen(btn.dataset.screen));
+});
+
+// Connection indicator
+function setOnline(state){
+  S.online = !!state;
+  const dot  = document.getElementById('liveDot');
+  const text = document.getElementById('liveText');
+  const off  = document.getElementById('offlineBanner');
+  dot.classList.remove('live','stale','dead');
+  if (state === true)  { dot.classList.add('live');  text.textContent = 'live'; off.classList.remove('show'); }
+  else if (state === 'stale') { dot.classList.add('stale'); text.textContent = 'stale'; }
+  else                 { dot.classList.add('dead');  text.textContent = 'offline'; off.classList.add('show'); }
+}
+
+// Status polling
+async function loadStatus() {
+  const r = await api('/api/status');
+  if (!r.ok) {
+    S.consecutiveFails++;
+    if (S.consecutiveFails >= 2) setOnline(false);
+    return;
+  }
+  S.consecutiveFails = 0;
+  S.lastUpdate = Date.now();
+  setOnline(true);
+  const d = r.data;
+
+  // Clock
+  if (d.time?.valid) {
+    const t = d.time;
+    const pad = n => String(n).padStart(2, '0');
+    document.getElementById('clockValue').textContent =
+      `${pad(t.hour)}:${pad(t.minute)}:${pad(t.second)}`;
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    document.getElementById('dateValue').textContent =
+      `${months[t.month-1]} ${t.day}, ${t.year}`;
+    document.getElementById('rtcBanner').classList.remove('show');
+  }
+
+  // RTC health (firmware v2.3+)
+  (function updateRtcBanner() {
+    const banner    = document.getElementById('rtcBanner');
+    const faultText = document.getElementById('rtcFaultText');
+    const ackBtn    = document.getElementById('rtcAckBtn');
+    const h         = d.rtcHealth;
+    if (h && h.faultActive) {
+      const i2cFault = h.present && !h.i2cHealthy && !d.time?.valid;
+      const critical = !h.present || i2cFault;
+      banner.className = 'banner ' + (critical ? 'error' : 'warn') + ' show';
+      const parts = [];
+      if (!h.present)    parts.push('RTC chip not detected');
+      if (i2cFault)      parts.push('I2C bus error - check SCL/SDA wiring');
+      if (h.lostPower)   parts.push('RTC lost power - replace battery');
+      if (!h.timeValid && h.present && !h.lostPower) parts.push('Set clock via Settings - Set Clock');
+      let summary = parts.join(' · ');
+      if (!summary) summary = (h.summary && (i2cFault || !/i2c/i.test(h.summary))) ? h.summary : 'RTC status warning';
+      const buzzerNote = h.acknowledged ? '' : ' · Buzzer repeats every 8 min';
+      faultText.textContent = summary + buzzerNote;
+      ackBtn.style.display = h.acknowledged ? 'none' : '';
+      if (!d.time?.valid) document.getElementById('ntpBanner').classList.remove('show');
+    } else if (!d.time?.valid) {
+      banner.className = 'banner warn show';
+      faultText.textContent = 'RTC time not set - go to Settings - Set Clock';
+      ackBtn.style.display = 'none';
+      document.getElementById('ntpBanner').classList.remove('show');
+    } else {
+      banner.classList.remove('show');
+    }
+  })();
+
+  if (d.time?.ntpSynced) document.getElementById('ntpBanner').classList.add('show');
+  else                   document.getElementById('ntpBanner').classList.remove('show');
+
+  // Sun
+  document.getElementById('sunriseValue').textContent = d.sun?.sunrise || '--:--';
+  document.getElementById('sunsetValue').textContent  = d.sun?.sunset  || '--:--';
+
+  // Chips
+  const apChip = document.getElementById('apChip');
+  apChip.textContent = 'AP ' + (d.wifi?.apIP || '--');
+  apChip.className   = 'chip good';
+
+  const staChip = document.getElementById('staChip');
+  if (d.wifi?.staIP) {
+    staChip.textContent = 'STA ' + d.wifi.staIP;
+    staChip.className   = 'chip info';
+    staChip.style.display = '';
+  } else {
+    staChip.style.display = 'none';
+  }
+
+  document.getElementById('clientsChip').textContent = `Clients ${d.wifi?.clients ?? 0}`;
+
+  const ntpChip = document.getElementById('ntpChip');
+  ntpChip.textContent = d.time?.ntpSynced ? 'NTP OK' : 'NTP --';
+  ntpChip.className   = 'chip ' + (d.time?.ntpSynced ? 'good' : '');
+
+  const free  = d.freeMem  ?? 0;
+  const psram = d.freePsram ?? 0;
+  document.getElementById('memChip').textContent =
+    psram > 0 ? `Heap ${(free/1024).toFixed(0)}k · PSRAM ${(psram/1024).toFixed(0)}k`
+              : `Heap ${(free/1024).toFixed(0)}k`;
+
+  document.getElementById('fwChip').textContent      = d.fw || 'FW --';
+  const fwText = document.getElementById('fwVersionText');
+  if (fwText) fwText.textContent = d.fw || '--';
+
+  updateCloudPanel(d.cloud || {});
+
+  
+// Relays
+  S.relays = d.relays || [];
+  renderRelayGrid();
+  renderControlList();
+  updateKPIs();
+  buildScheduleTargets();
+
+  // Last-update label
+  const upd = document.getElementById('lastUpdate');
+  if (upd) {
+    const n = new Date(S.lastUpdate);
+    upd.textContent = `Last updated ${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`;
+  }
+  const cnt = document.getElementById('relayCountLabel');
+  if (cnt) cnt.textContent = `${S.relays.length} relay${S.relays.length === 1 ? '' : 's'} · live`;
+}
+
+// Stale-check: if no successful poll for >12s, mark stale
+setInterval(() => {
+  if (S.online && S.lastUpdate && (Date.now() - S.lastUpdate) > 12000) setOnline('stale');
+}, 3000);
+
+// Relay grid (Dashboard)
+function renderRelayGrid() {
+  const grid = document.getElementById('relayGrid');
+  if (!S.relays.length) { grid.innerHTML = '<div class="log-empty">No relay data</div>'; return; }
+  grid.innerHTML = S.relays.map(r => {
+    const on = r.on;
+    const modeLabel = ['AUTO','MANUAL ON','MANUAL OFF'][r.mode] || 'AUTO';
+    const icon = r.isLight
+      ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.74V17h8v-2.26A7 7 0 0 0 12 2z"/></svg>'
+      : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>';
+    return `<article class="relay-card ${on ? 'on' : ''}" id="rcard-${r.id}">
+      <div class="relay-top">
+        <div>
+          <div class="relay-name">${escHtml(r.name)}</div>
+          <div class="relay-meta">${icon} ${r.wattage}W</div>
+        </div>
+        <div class="state-pill ${on ? 'on' : 'off'}">${on ? 'ON' : 'OFF'}</div>
+      </div>
+      <div class="relay-state">${on ? 'ON' : 'OFF'}</div>
+      <div class="relay-mode-tag">${modeLabel}</div>
+    </article>`;
+  }).join('');
+}
+
+// Control list
+function renderControlList() {
+  const lights = S.relays.filter(r =>  r.isLight);
+  const fans   = S.relays.filter(r => !r.isLight);
+  document.getElementById('lightControlList').innerHTML = lights.map(relayControlHTML).join('') || '<div class="tiny">No light relays.</div>';
+  document.getElementById('fanControlList').innerHTML   = fans.map(relayControlHTML).join('')   || '<div class="tiny">No fan relays.</div>';
+  S.relays.forEach(r => {
+    ['auto','on','off'].forEach(m => {
+      const btn = document.getElementById(`rbtn-${r.id}-${m}`);
+      if (btn) btn.addEventListener('click', () => setRelayMode(r.id, m));
+    });
+  });
+}
+
+function relayControlHTML(r) {
+  const on   = r.on;
+  const mode = r.mode; // 0=auto,1=on,2=off
+  return `<div class="control-relay ${on ? 'on' : ''}" id="cr-${r.id}">
+    <div class="control-relay-head">
+      <div>
+        <div class="relay-name">${escHtml(r.name)}</div>
+        <div class="status-line">
+          <div class="status-dot ${on ? 'on' : ''}"></div>
+          <span>${on ? 'ON' : 'OFF'} - ${['AUTO','MANUAL ON','MANUAL OFF'][mode] || 'AUTO'}</span>
+        </div>
+      </div>
+      <div style="text-align:right;font-size:.72rem;color:var(--color-text-muted)">${r.wattage}W</div>
+    </div>
+    <div class="control-relay-actions">
+      <button class="btn soft ${mode===0?'active-mode-auto':''}" id="rbtn-${r.id}-auto" type="button">AUTO</button>
+      <button class="btn soft ${mode===1?'active-mode-on':''}"   id="rbtn-${r.id}-on"   type="button">ON</button>
+      <button class="btn soft ${mode===2?'active-mode-off':''}"  id="rbtn-${r.id}-off"  type="button">OFF</button>
+    </div>
+  </div>`;
+}
+
+async function setRelayMode(id, modeStr) {
+  const modeMap = { auto: 0, on: 1, off: 2 };
+  const mode    = modeMap[modeStr];
+  const overrideDur = modeStr === 'auto' ? 0 : S.overrideMin;
+  const r = await api('/api/relay', {
+    method: 'POST',
+    body: JSON.stringify({ relayId: id, mode, override: overrideDur })
+  });
+  if (r.ok) {
+    toast(`Relay ${id} - ${modeStr.toUpperCase()}`, 'ok');
+    if (modeStr !== 'auto') startOverrideCountdown(overrideDur);
+    else {
+      if (S.overrideCountdownTimer) { clearInterval(S.overrideCountdownTimer); S.overrideCountdownTimer = null; }
+      document.getElementById('overrideValue').textContent = S.overrideMin;
+    }
+    await loadStatus();
+  } else {
+    toast(r.data?.message || 'Failed', 'err');
+  }
+}
+
+async function setGroupMode(isLight, modeStr) {
+  const modeMap = { auto: 0, on: 1, off: 2 };
+  const mode    = modeMap[modeStr];
+  const targets = S.relays.filter(r => r.isLight === isLight);
+  if (!targets.length) { toast('No matching relays', 'err'); return; }
+  const overrideDurG = modeStr === 'auto' ? 0 : S.overrideMin;
+  await Promise.all(targets.map(r =>
+    api('/api/relay', {
+      method: 'POST',
+      body: JSON.stringify({ relayId: r.id, mode, override: overrideDurG })
+    })
+  ));
+  if (modeStr !== 'auto') startOverrideCountdown(overrideDurG);
+  else {
+    if (S.overrideCountdownTimer) { clearInterval(S.overrideCountdownTimer); S.overrideCountdownTimer = null; }
+    document.getElementById('overrideValue').textContent = S.overrideMin;
+  }
+  await loadStatus();
+  toast(`${isLight ? 'Lights' : 'Fans'} - ${modeStr.toUpperCase()}`, 'ok');
+}
+
+document.getElementById('allLightsOn').addEventListener('click',   () => setGroupMode(true,  'on'));
+document.getElementById('allLightsOff').addEventListener('click',  () => setGroupMode(true,  'off'));
+document.getElementById('allLightsAuto').addEventListener('click', () => setGroupMode(true,  'auto'));
+document.getElementById('allFansOn').addEventListener('click',     () => setGroupMode(false, 'on'));
+document.getElementById('allFansOff').addEventListener('click',    () => setGroupMode(false, 'off'));
+document.getElementById('allFansAuto').addEventListener('click',   () => setGroupMode(false, 'auto'));
+
+// KPIs
+function updateKPIs() {
+  const lights = S.relays.filter(r =>  r.isLight && r.on).length;
+  const fans   = S.relays.filter(r => !r.isLight && r.on).length;
+  const load   = S.relays.filter(r =>  r.on).reduce((a, r) => a + (r.wattage || 0), 0);
+  document.getElementById('lightsOnValue').textContent = lights;
+  document.getElementById('fansOnValue').textContent   = fans;
+  document.getElementById('loadValue').textContent     = load + 'W';
+}
+
+// Override stepper
+document.getElementById('overrideDown').addEventListener('click', () => {
+  S.overrideMin = Math.max(0, S.overrideMin - 15);
+  document.getElementById('overrideValue').textContent = S.overrideMin;
+});
+document.getElementById('overrideUp').addEventListener('click', () => {
+  S.overrideMin = Math.min(480, S.overrideMin + 15);
+  document.getElementById('overrideValue').textContent = S.overrideMin;
+});
+
+function startOverrideCountdown(minutes) {
+  if (S.overrideCountdownTimer) clearInterval(S.overrideCountdownTimer);
+  if (!minutes || minutes <= 0) {
+    document.getElementById('overrideValue').textContent = S.overrideMin;
+    S.overrideEndTime = null;
+    return;
+  }
+  S.overrideEndTime = new Date(Date.now() + minutes * 60 * 1000);
+  function tick() {
+    const remaining = Math.max(0, Math.round((S.overrideEndTime - Date.now()) / 60000));
+    const el = document.getElementById('overrideValue');
+    if (remaining <= 0) {
+      el.textContent = S.overrideMin;
+      clearInterval(S.overrideCountdownTimer);
+      S.overrideCountdownTimer = null;
+      S.overrideEndTime = null;
+    } else {
+      el.textContent = remaining + ' min';
+    }
+  }
+  tick();
+  S.overrideCountdownTimer = setInterval(tick, 15000);
+}
+
+// Schedule load/save
+const trigLabels = ['Sunset', 'Sunrise', 'Fixed'];
+let scheduleTargets = [];
+let currentScheduleTarget = '';
+
+function buildScheduleTargets() {
+  const targets = [
+    { value: 'lights:group', label: 'All lights', kind: 'lights' },
+    { value: 'fans:group',   label: 'All fans',   kind: 'fans'   }
+  ];
+  (S.relays || []).forEach(r => targets.push({
+    value:   `${r.isLight ? 'lights' : 'fans'}:relay:${r.id}`,
+    label:   r.name,
+    kind:    r.isLight ? 'lights' : 'fans',
+    relayId: r.id
+  }));
+  scheduleTargets = targets;
+  const picker = document.getElementById('scheduleTargetPicker');
+  if (!picker) return;
+  if (!targets.some(t => t.value === currentScheduleTarget))
+    currentScheduleTarget = targets[0]?.value || '';
+  picker.innerHTML = targets.map(t =>
+    `<button class="sched-target-btn${t.value === currentScheduleTarget ? ' sel' : ''}" type="button" data-val="${t.value}">${escHtml(t.label)}</button>`
+  ).join('');
+  picker.querySelectorAll('.sched-target-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      picker.querySelectorAll('.sched-target-btn').forEach(b => b.classList.remove('sel'));
+      btn.classList.add('sel');
+      currentScheduleTarget = btn.dataset.val;
+      updateSchedulePanels();
+      await loadSchedules();
+    });
+  });
+  updateSchedulePanels();
+}
+function currentTarget() {
+  return scheduleTargets.find(t => t.value === currentScheduleTarget) || scheduleTargets[0];
+}
+
+function updateSchedulePanels() {
+  const t = currentTarget();
+  if (!t) return;
+  document.getElementById('scheduleLightsCard').style.display = t.kind === 'lights' ? '' : 'none';
+  document.getElementById('scheduleFansCard').style.display   = t.kind === 'fans'   ? '' : 'none';
+  document.getElementById('scheduleTargetHelp').textContent =
+    t.relayId ? `Scheduling only ${t.label}.` : `Scheduling ${t.label}.`;
+  updateLightsOffsetNote();
+  updateLightsOffNote();
+}
+function updateLightsOffsetNote() {
+  const t = currentTarget(); if (!t) return;
+  const trig    = parseInt(document.getElementById('lightsOnTrigger').value, 10);
+  const offset  = parseInt(document.getElementById('lightsOnOffset').value, 10) || 0;
+  const isFixed = trig === 2;
+  document.getElementById('lightsOnOffsetRow').style.display = isFixed ? 'none' : '';
+  document.getElementById('lightsOnFixedRow').style.display  = isFixed ? '' : 'none';
+  if (!isFixed) document.getElementById('lightsOnOffsetNote').textContent =
+    `${t.relayId ? t.label : 'Target'} ON at ${trigLabels[trig].toLowerCase()} ${offset >= 0 ? '+' : ''}${offset} min`;
+}
+function updateLightsOffNote() {
+  const t = currentTarget(); if (!t) return;
+  const trig    = parseInt(document.getElementById('lightsOffTrigger').value, 10);
+  const offset  = parseInt(document.getElementById('lightsOffOffset').value, 10) || 0;
+  const isFixed = trig === 2;
+  document.getElementById('lightsOffOffsetRow').style.display = isFixed ? 'none' : '';
+  document.getElementById('lightsOffFixedRow').style.display  = isFixed ? '' : 'none';
+  if (!isFixed) document.getElementById('lightsOffOffsetNote').textContent =
+    `${t.relayId ? t.label : 'Target'} OFF at ${trigLabels[trig].toLowerCase()} ${offset >= 0 ? '+' : ''}${offset} min`;
+}
+document.getElementById('lightsOnTrigger').addEventListener('change', updateLightsOffsetNote);
+document.getElementById('lightsOnOffset').addEventListener('input',   updateLightsOffsetNote);
+document.getElementById('lightsOffTrigger').addEventListener('change', updateLightsOffNote);
+document.getElementById('lightsOffOffset').addEventListener('input',   updateLightsOffNote);
+
+async function loadSchedules() {
+  const t = currentTarget();
+  if (!t) return;
+
+  if (t.kind === 'lights') {
+    const statusResp = await api('/api/status');
+    const lights = Array.isArray(statusResp.data?.lightSchedules) ? statusResp.data.lightSchedules : [];
+    let d = lights[0] || {};
+    if (t.relayId) d = lights.find(x => Number(x.relayId || x.id) === Number(t.relayId)) || d || {};
+    document.getElementById('lightsSchedEnabled').checked = d.enabled ?? true;
+    document.getElementById('lightsOnTrigger').value      = d.onTrigger ?? 0;
+    document.getElementById('lightsOnOffset').value       = d.onOffsetMin  ?? d.onOffset  ?? 0;
+    document.getElementById('lightsOnFixed').value        = d.onFixed  || '19:00';
+    document.getElementById('lightsOffTrigger').value     = d.offTrigger ?? 1;
+    document.getElementById('lightsOffOffset').value      = d.offOffsetMin ?? d.offOffset ?? 0;
+    document.getElementById('lightsOffFixed').value       = d.offFixed || '06:30';
+    updateLightsOffsetNote();
+    updateLightsOffNote();
+    return;
+  }
+
+  const url = t.relayId
+    ? `/api/schedule/fans?relayId=${encodeURIComponent(t.relayId)}`
+    : '/api/schedule/fans';
+  const r = await api(url);
+  const d = r.data?.fanSchedule || r.data?.fans || r.data || {};
+  document.getElementById('fansSchedEnabled').checked = d.enabled ?? true;
+  S.fanHours      = d.hoursPerDay ?? 5;
+  S.fanInterval   = d.intervalMin ?? 15;
+  S.fanWindowType = d.windowType  ?? 0;
+  updateFanHoursLabel();
+  document.getElementById('fanIntervalValue').textContent = S.fanInterval;
+  setFanWindowType(S.fanWindowType);
+  document.getElementById('fanSunriseOffset').value = d.windowStartOffsetMin ?? d.sunriseOffsetMin ?? 0;
+  document.getElementById('fanSunsetOffset').value  = d.windowEndOffsetMin   ?? d.sunsetOffsetMin  ?? 0;
+  updateFanSunOffsetNote();
+  document.getElementById('fanWindowStart').value = d.winStart || '08:00';
+  document.getElementById('fanWindowEnd').value   = d.winEnd   || '17:00';
+}
+
+document.getElementById('saveLightsSchedBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('saveLightsSchedBtn');
+  const msg = document.getElementById('lightsSchedMsg');
+  const t   = currentTarget();
+  btn.disabled    = true;
+  msg.className   = 'status-msg';
+  msg.textContent = 'Saving...';
+
+  const one = {
+    enabled:      document.getElementById('lightsSchedEnabled').checked,
+    onTrigger:    parseInt(document.getElementById('lightsOnTrigger').value,  10),
+    onOffsetMin:  parseInt(document.getElementById('lightsOnOffset').value,   10) || 0,
+    onFixed:      document.getElementById('lightsOnFixed').value,
+    offTrigger:   parseInt(document.getElementById('lightsOffTrigger').value, 10),
+    offOffsetMin: parseInt(document.getElementById('lightsOffOffset').value,  10) || 0,
+    offFixed:     document.getElementById('lightsOffFixed').value
+  };
+
+  let body;
+  if (t.relayId) {
+    body = { relayId: t.relayId, schedule: one };
+  } else {
+    const statusResp = await api('/api/status');
+    const lights = Array.isArray(statusResp.data?.lightSchedules) ? statusResp.data.lightSchedules : [];
+    body = { lights: lights.length ? lights.map(() => ({ ...one })) : [{ ...one }] };
+  }
+
+  const r = await api('/api/schedule/lights', { method: 'POST', body: JSON.stringify(body) });
+  btn.disabled = false;
+  if (r.ok) {
+    msg.className = 'status-msg ok';
+    msg.textContent = 'Schedule saved - relays returned to AUTO';
+    toast('Light schedule saved', 'ok');
+    setTimeout(loadStatus, 1200);
+  }
+  else      { msg.className = 'status-msg err'; msg.textContent = r.data?.message || 'Save failed'; }
+});
+
+// Fan schedule helpers
+function hhmmToMin(s) {
+  if (typeof s !== 'string' || !/^\d{2}:\d{2}$/.test(s)) return -1;
+  const [h, m] = s.split(':').map(n => parseInt(n, 10));
+  if (isNaN(h) || isNaN(m) || h > 23 || m > 59) return -1;
+  return h * 60 + m;
+}
+function calcWindowMinutes(startMin, endMin) {
+  if (startMin < 0 || endMin < 0) return 0;
+  if (endMin === startMin) return 24 * 60;
+  let diff = endMin - startMin;
+  if (diff < 0) diff += 24 * 60; // wraps past midnight
+  return diff;
+}
+function clampNumber(v, min, max, fallback = 0) {
+  const n = parseInt(v, 10);
+  if (isNaN(n)) return fallback;
+  return Math.min(max, Math.max(min, n));
+}
+function updateFanHoursLabel() {
+  document.getElementById('fanHoursValue').textContent = S.fanHours;
+}
+function validateFanScheduleClient(p) {
+  if (p.hoursPerDay < 1 || p.hoursPerDay > 24)
+    return 'Run hours must be between 1 and 24.';
+  if (p.intervalMin < 1 || p.intervalMin > 240)
+    return 'Interval must be between 1 and 240 minutes.';
+  if (p.windowType === 1) {
+    const a = hhmmToMin(p.winStart);
+    const b = hhmmToMin(p.winEnd);
+    if (a < 0 || b < 0)  return 'Invalid fan window time.';
+    const win = calcWindowMinutes(a, b);
+    if (win === 0)       return 'Window start and end cannot be equal.';
+    const need = p.hoursPerDay * 60;
+    if (need > win) {
+      const winH = (win / 60).toFixed(win % 60 ? 1 : 0);
+      return `Cannot run ${p.hoursPerDay}h inside a ${winH}h window. Reduce run hours or widen the window.`;
+    }
+  }
+  return null; // ok
+}
+
+document.getElementById('saveFansSchedBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('saveFansSchedBtn');
+  const msg = document.getElementById('fansSchedMsg');
+  const t   = currentTarget();
+
+  const payload = {
+    enabled:     document.getElementById('fansSchedEnabled').checked,
+    hoursPerDay: S.fanHours,
+    intervalMin: S.fanInterval,
+    windowType:  S.fanWindowType,
+    windowStartOffsetMin: clampNumber(document.getElementById('fanSunriseOffset').value, -720, 720),
+    windowEndOffsetMin:   clampNumber(document.getElementById('fanSunsetOffset').value,  -720, 720),
+    winStart:    document.getElementById('fanWindowStart').value,
+    winEnd:      document.getElementById('fanWindowEnd').value
+  };
+  document.getElementById('fanSunriseOffset').value = payload.windowStartOffsetMin;
+  document.getElementById('fanSunsetOffset').value  = payload.windowEndOffsetMin;
+  updateFanSunOffsetNote();
+
+  // * Instant client-side check - no round trip needed
+  const why = validateFanScheduleClient(payload);
+  if (why) {
+    msg.className = 'status-msg err';
+    msg.textContent = why;
+    toast(why, 'err');
+    return;
+  }
+
+  btn.disabled    = true;
+  msg.className   = 'status-msg';
+  msg.textContent = 'Saving...';
+
+  const body = t.relayId ? { relayId: t.relayId, schedule: payload } : payload;
+  const r = await api('/api/schedule/fans', { method: 'POST', body: JSON.stringify(body), pinReason: 'Saving fan schedule requires the admin PIN.' });
+  btn.disabled = false;
+  if (r.cancelled) { msg.className = 'status-msg'; msg.textContent = ''; return; }
+  if (r.ok) {
+    msg.className = 'status-msg ok';
+    msg.textContent = 'Fan schedule saved - relays returned to AUTO';
+    toast('Fan schedule saved', 'ok');
+    setTimeout(loadStatus, 1200);
+  }
+  else      { msg.className = 'status-msg err'; msg.textContent = r.data?.message || 'Save failed'; toast(r.data?.message || 'Save failed', 'err'); }
+});
+
+document.getElementById('fanHoursDown').addEventListener('click', () => {
+  S.fanHours = Math.max(1, S.fanHours - 1);
+  updateFanHoursLabel();
+});
+document.getElementById('fanHoursUp').addEventListener('click', () => {
+  S.fanHours = Math.min(24, S.fanHours + 1);
+  updateFanHoursLabel();
+});
+document.getElementById('fanIntervalDown').addEventListener('click', () => {
+  S.fanInterval = Math.max(1, S.fanInterval - 5);
+  document.getElementById('fanIntervalValue').textContent = S.fanInterval;
+});
+document.getElementById('fanIntervalUp').addEventListener('click', () => {
+  S.fanInterval = Math.min(240, S.fanInterval + 5);
+  document.getElementById('fanIntervalValue').textContent = S.fanInterval;
+});
+function setFanWindowType(type) {
+  S.fanWindowType = type;
+  document.getElementById('fanWindowSun').classList.toggle('active',   type === 0);
+  document.getElementById('fanWindowFixed').classList.toggle('active', type === 1);
+  document.getElementById('fanSunOffsetRow').style.display = type === 0 ? '' : 'none';
+  document.getElementById('fanSunOffsetNote').style.display = type === 0 ? '' : 'none';
+  document.getElementById('fanFixedTimeRow').style.display = type === 1 ? '' : 'none';
+  updateFanSunOffsetNote();
+}
+document.getElementById('fanWindowSun').addEventListener('click',   () => setFanWindowType(0));
+document.getElementById('fanWindowFixed').addEventListener('click', () => setFanWindowType(1));
+function updateFanSunOffsetNote() {
+  const sr = parseInt(document.getElementById('fanSunriseOffset').value, 10) || 0;
+  const ss = parseInt(document.getElementById('fanSunsetOffset').value, 10) || 0;
+  document.getElementById('fanSunOffsetNote').textContent =
+    `Fan window starts at sunrise ${sr >= 0 ? '+' : ''}${sr} min and ends at sunset ${ss >= 0 ? '+' : ''}${ss} min`;
+}
+document.getElementById('fanSunriseOffset').addEventListener('input', updateFanSunOffsetNote);
+document.getElementById('fanSunsetOffset').addEventListener('input', updateFanSunOffsetNote);
+
+// Log
+async function loadLog() {
+  const r = await api('/api/log?max=200');
+  if (!r.ok) { document.getElementById('logList').innerHTML = '<div class="log-empty">Failed to load log</div>'; return; }
+  S.log = r.data?.log || [];
+  renderLog();
+}
+
+function isRelayAction(entry) {
+  const src = String(entry?.src || '').toUpperCase();
+  const msg = String(entry?.msg || '').toUpperCase();
+  return src.includes('RELAY') || msg.includes('RELAY') || msg.includes('OVERRIDE') || msg.includes('MODE');
+}
+
+function getFilteredLogEntries() {
+  const filter = S.logFilter;
+  if (filter === 'ALL')   return S.log;
+  if (filter === 'RELAY') return S.log.filter(isRelayAction);
+  return S.log.filter(e => String(e.lvl || '').toUpperCase() === filter);
+}
+
+function renderLog() {
+  const filtered = getFilteredLogEntries();
+  const list  = document.getElementById('logList');
+  const count = document.getElementById('logCountLabel');
+  count.textContent = `${filtered.length} shown / ${S.log.length} total`;
+  if (!filtered.length) { list.innerHTML = '<div class="log-empty">No entries</div>'; return; }
+  list.innerHTML = filtered.map(e => `
+    <div class="log-item level-${String(e.lvl||'info').toLowerCase()}">
+      <div class="log-top">
+        <span class="tag ${String(e.lvl||'INFO').toLowerCase()}">${escHtml(e.lvl||'INFO')}</span>
+        <span>${escHtml(e.src||'')}</span>
+        <span>${escHtml(e.ts||'')}</span>
+      </div>
+      <div class="log-msg">${escHtml(e.msg||'')}</div>
+    </div>`).join('');
+}
+
+['ALL','RELAY','WARN','ERROR','CRITICAL'].forEach(f => {
+  const btn = document.getElementById('logFilter-' + f);
+  if (btn) btn.addEventListener('click', () => {
+    S.logFilter = f;
+    document.querySelectorAll('[id^="logFilter-"]').forEach(b => b.classList.remove('active-mode-auto'));
+    btn.classList.add('active-mode-auto');
+    renderLog();
+  });
+});
+
+document.getElementById('clearLogBtn').addEventListener('click', async () => {
+  if (!confirm('Clear all log entries?')) return;
+  const r = await api('/api/log/clear', { method: 'POST' });
+  if (r.ok) { S.log = []; renderLog(); toast('Log cleared', 'ok'); }
+  else      toast(r.data?.message || 'Failed', 'err');
+});
+
+function exportLogsCsv(rows, filename) {
+  if (!rows.length) { toast('No log entries to export', 'err'); return; }
+  const esc = v => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+  const csv = ['timestamp,source,level,message']
+    .concat(rows.map(e => [esc(e.ts), esc(e.src), esc(e.lvl), esc(e.msg)].join(',')))
+    .join(String.fromCharCode(10));
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const a    = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+document.getElementById('exportLogBtn').addEventListener('click', () => {
+  exportLogsCsv(getFilteredLogEntries(), 'skylight-log.csv');
+});
+document.getElementById('exportRelayLogBtn').addEventListener('click', () => {
+  exportLogsCsv(S.log.filter(isRelayAction), 'skylight-relay-actions.csv');
+});
+
+// Settings
+async function loadSettings() {
+  const r = await api('/api/settings');
+  if (!r.ok) return;
+  const d = r.data;
+  document.getElementById('ssidInput').value       = d.apSSID   || '';
+  document.getElementById('passInput').value       = d.apPass   || '';
+  document.getElementById('wifiSsidInput').value   = d.wifiSsid || '';
+  document.getElementById('wifiPassInput').value   = '';
+  document.getElementById('latInput').value        = d.lat      ?? '';
+  document.getElementById('lonInput').value        = d.lon      ?? '';
+  document.getElementById('tzInput').value         = d.tz       ?? -6;
+  document.getElementById('cityNameInput').value   = d.cityName || '';
+  document.getElementById('autoDstToggle').checked = d.autoDst  ?? true;
+  fillManualTimeInputsFromNow();
+  const sel = document.getElementById('citySelect');
+  if (sel && cityPresets.length) {
+    const m = cityPresets.find(c => String(c.city) === String(d.cityName));
+    sel.value = m ? String(m.index) : '';
+  }
+  updateCloudPanel(d.cloud || {});
+}
+
+document.getElementById('saveSettingsBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('saveSettingsBtn');
+  const msg = document.getElementById('settingsMsg');
+  btn.disabled = true; msg.textContent = 'Saving...'; msg.className = 'status-msg';
+
+  const wifiPassValue = document.getElementById('wifiPassInput').value;
+  const body = {
+    wifiSsid: document.getElementById('wifiSsidInput').value,
+    lat:      parseFloat(document.getElementById('latInput').value),
+    lon:      parseFloat(document.getElementById('lonInput').value),
+    tz:       parseInt(document.getElementById('tzInput').value),
+    autoDst:  document.getElementById('autoDstToggle').checked,
+    cityName: document.getElementById('cityNameInput').value.trim()
+  };
+  if (wifiPassValue.length > 0) body.wifiPass = wifiPassValue;
+
+  const r = await api('/api/settings', {
+    method: 'POST',
+    body: JSON.stringify(body),
+    forcePin: true,
+    pinReason: 'Enter the admin PIN to save settings.'
+  });
+  btn.disabled = false;
+  if (r.ok) {
+    const text = r.data?.message || 'Settings saved';
+    msg.className = 'status-msg ok'; msg.textContent = text;
+    toast(text, 'ok');
+  } else {
+    msg.className = 'status-msg err'; msg.textContent = r.data?.message || 'Save failed';
+  }
+});
+
+document.getElementById('citySelect').addEventListener('change', (e) => {
+  const v = e.target.value;
+  if (!v) {
+    const help = document.getElementById('cityHelpText');
+    if (help) help.textContent = 'Custom location selected. Enter values manually and press Save Settings.';
+    return;
+  }
+  applyCityToFields(v);
+});
+
+document.getElementById('saveCloudBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('saveCloudBtn');
+  const msg = document.getElementById('cloudMsg');
+  btn.disabled = true;
+  msg.className = 'status-msg';
+  msg.textContent = 'Saving...';
+  const body = {
+    cloudEnabled: document.getElementById('cloudEnabledToggle').checked,
+    cloudUrl: document.getElementById('cloudUrlInput').value.trim(),
+    deviceName: document.getElementById('cloudDeviceNameInput').value.trim(),
+    groupName: document.getElementById('cloudGroupNameInput').value.trim(),
+    pushErrorsEnabled: document.getElementById('pushErrorsToggle').checked
+  };
+  const r = await api('/api/cloud', {
+    method: 'POST',
+    body: JSON.stringify(body),
+    forcePin: true,
+    pinReason: 'Enter the admin PIN to save cloud access settings.'
+  });
+  btn.disabled = false;
+  if (r.ok) {
+    msg.className = 'status-msg ok';
+    msg.textContent = 'Cloud settings saved';
+    toast('Cloud settings saved', 'ok');
+    loadStatus();
+  } else {
+    msg.className = 'status-msg err';
+    msg.textContent = r.data?.message || 'Cloud save failed';
+  }
+});
+
+document.getElementById('saveManualTimeBtn').addEventListener('click', async () => {
+  const dv = document.getElementById('manualDate').value;
+  const tv = document.getElementById('manualTime').value;
+  if (!dv || !tv) {
+    document.getElementById('settingsMsg').textContent = 'Enter both date and time first';
+    document.getElementById('settingsMsg').className   = 'status-msg err';
+    toast('Enter both date and time first', 'err');
+    return;
+  }
+  const [y, m, d] = dv.split('-').map(v => parseInt(v, 10));
+  const parts     = tv.split(':').map(v => parseInt(v, 10));
+  await postManualRtc(y, m, d, parts[0]||0, parts[1]||0, parts[2]||0);
+});
+
+document.getElementById('setTimeBtn').addEventListener('click', async () => {
+  const now = new Date();
+  await postManualRtc(now.getFullYear(), now.getMonth()+1, now.getDate(),
+                      now.getHours(),    now.getMinutes(), now.getSeconds());
+});
+
+document.getElementById('rebootBtn').addEventListener('click', async () => {
+  if (!confirm('Reboot the controller?')) return;
+  const r = await api('/api/reboot', { method: 'POST' });
+  if (r.ok) toast('Rebooting...', 'ok');
+  else      toast(r.data?.message || 'Reboot failed', 'err');
+});
+
+document.getElementById('factoryResetBtn').addEventListener('click', async () => {
+  if (!confirm('Factory reset will erase all settings and schedules. Continue?')) return;
+  const r = await api('/api/reset', { method: 'POST' });
+  if (r.ok) { toast('Factory reset complete', 'ok'); setTimeout(loadSettings, 1000); }
+  else      toast(r.data?.message || 'Reset failed', 'err');
+});
+
+document.getElementById('refreshBtn').addEventListener('click', loadStatus);
+
+// Init & polling
+loadStatus();
+// RTC fault acknowledge
+document.getElementById('rtcAckBtn').addEventListener('click', async function () {
+  const btn = this;
+  btn.disabled = true;
+  const r = await api('/api/rtc/ack', {
+    method: 'POST',
+    auth: true,
+    pinReason: 'Acknowledge RTC fault (silences buzzer)'
+  });
+  btn.disabled = false;
+  if (r.ok) {
+    btn.style.display = 'none';
+    toast('RTC fault acknowledged - buzzer silenced', 'ok');
+    loadStatus();
+  } else if (!r.cancelled) {
+    toast(r.data?.message || 'Acknowledge failed', 'err');
+  }
+});
+
+setInterval(loadStatus, 5000);
+
+(function bootCityLoader(){
+  function go(){ if (typeof loadCities === 'function') loadCities(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go);
+  else go();
+  setTimeout(go, 1200);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,230 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String    @id @default(cuid())
+  username        String    @unique
+  email           String    @unique
+  emailVerifiedAt DateTime?
+  passwordHash    String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  orgMemberships      OrganizationMember[]
+  sessions            Session[]
+  otpChallenges       OtpChallenge[]
+  emailTokens         EmailVerificationToken[]
+  commandsCreated     BoardCommand[]
+  auditEvents         AuditEvent[]
+}
+
+model Organization {
+  id          String   @id @default(cuid())
+  name        String
+  ownerUserId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members      OrganizationMember[]
+  subscription Subscription?
+  boards       Board[]
+  boardGroups  BoardGroup[]
+  auditEvents  AuditEvent[]
+}
+
+model OrganizationMember {
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String
+  role           String   @default("member")
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+}
+
+model Subscription {
+  id                   String    @id @default(cuid())
+  organizationId       String    @unique
+  stripeCustomerId     String    @unique
+  stripeSubscriptionId String?   @unique
+  status               String    @default("inactive")
+  boardCount           Int       @default(0)
+  unitPriceCents       Int       @default(0)
+  currentPeriodEnd     DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model Board {
+  id              String    @id @default(cuid())
+  organizationId  String?
+  boardId         String    @unique
+  boardSecretHash String    @default("")
+  pairingCodeHash String    @default("")
+  pairingExpiresAt DateTime?
+  deviceName      String    @default("Skylight 100")
+  model           String    @default("waveshare-main")
+  firmwareVersion String    @default("unknown")
+  staIp           String    @default("")
+  apSsid          String    @default("")
+  freeHeap        Int       @default(0)
+  freePsram       Int       @default(0)
+  claimedAt       DateTime?
+  lastSeenAt      DateTime?
+  statusJson      String    @default("{}")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  organization Organization?        @relation(fields: [organizationId], references: [id])
+  groups       BoardGroupMembership[]
+  commands     BoardCommand[]
+  logs         BoardLog[]
+  heartbeats   BoardHeartbeat[]
+  auditEvents  AuditEvent[]
+
+  @@index([organizationId])
+  @@index([pairingCodeHash])
+}
+
+model BoardGroup {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  memberships  BoardGroupMembership[]
+
+  @@unique([organizationId, name])
+}
+
+model BoardGroupMembership {
+  id          String   @id @default(cuid())
+  boardId     String
+  boardGroupId String
+  createdAt   DateTime @default(now())
+
+  board      Board      @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  boardGroup BoardGroup @relation(fields: [boardGroupId], references: [id], onDelete: Cascade)
+
+  @@unique([boardId, boardGroupId])
+}
+
+model BoardCommand {
+  id              String    @id @default(cuid())
+  boardId         String
+  type            String
+  payloadJson     String    @default("{}")
+  status          String    @default("queued")
+  createdByUserId String?
+  createdAt       DateTime  @default(now())
+  deliveredAt     DateTime?
+  ackedAt         DateTime?
+  failedAt        DateTime?
+  failureReason   String?
+
+  board       Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  createdBy   User?  @relation(fields: [createdByUserId], references: [id])
+
+  @@index([boardId, status])
+}
+
+model BoardLog {
+  id        String   @id @default(cuid())
+  boardId   String
+  timestamp DateTime
+  source    String
+  level     String
+  message   String
+  createdAt DateTime @default(now())
+
+  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
+  @@index([boardId, timestamp])
+}
+
+model BoardHeartbeat {
+  id        String   @id @default(cuid())
+  boardId   String
+  freeHeap  Int      @default(0)
+  freePsram Int      @default(0)
+  staIp     String   @default("")
+  createdAt DateTime @default(now())
+
+  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
+  @@index([boardId, createdAt])
+}
+
+model AuditEvent {
+  id             String   @id @default(cuid())
+  organizationId String?
+  userId         String?
+  boardId        String?
+  eventType      String
+  detailsJson    String   @default("{}")
+  ipAddress      String   @default("")
+  userAgent      String   @default("")
+  createdAt      DateTime @default(now())
+
+  organization Organization? @relation(fields: [organizationId], references: [id])
+  user         User?          @relation(fields: [userId], references: [id])
+  board        Board?         @relation(fields: [boardId], references: [id])
+
+  @@index([organizationId, createdAt])
+  @@index([userId, createdAt])
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model OtpChallenge {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  attempts  Int       @default(0)
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Session {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  ipAddress String    @default("")
+  userAgent String    @default("")
+  createdAt DateTime  @default(now())
+  lastUsedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
