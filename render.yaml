@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: starter
     buildCommand: npm ci --include=dev && npx prisma generate && npm run build
-    startCommand: npx prisma db push --accept-data-loss && npm start
+    startCommand: npx prisma db push --accept-data-loss && node .next/standalone/server.js
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV

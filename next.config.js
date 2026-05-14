@@ -3,7 +3,6 @@ const nextConfig = {
   output: "standalone",
   experimental: {
     serverActions: { allowedOrigins: ["*"] },
-    isrMemoryCacheSize: 0,
   },
   async headers() {
     return [
