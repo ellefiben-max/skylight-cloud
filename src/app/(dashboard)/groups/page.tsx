@@ -22,29 +22,31 @@ export default async function GroupsPage() {
   const now = Date.now();
 
   return (
-    <div style={{ display: "grid", gap: "1.5rem" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <div style={{ display: "grid", gap: "2rem" }}>
+      <div>
         <h1 style={{ fontWeight: 700, fontSize: "1.75rem", letterSpacing: "-0.04em" }}>Groups</h1>
+        <p style={{ color: "var(--color-text-muted)", marginTop: "0.25rem", fontSize: "0.9375rem" }}>
+          Boards organized into groups for easier management.
+        </p>
       </div>
 
       {groups.length === 0 ? (
-        <div className="panel" style={{ padding: "2rem", textAlign: "center", color: "var(--color-text-muted)" }}>
-          No groups yet. Assign a group when{" "}
-          <Link href="/boards/new" style={{ color: "var(--color-primary)" }}>
-            adding a board
-          </Link>
-          .
+        <div className="card" style={{ padding: "3rem", textAlign: "center" }}>
+          <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>🗂️</div>
+          <h2 style={{ fontWeight: 600, marginBottom: "0.5rem" }}>No groups yet</h2>
+          <p style={{ color: "var(--color-text-muted)", marginBottom: "1.5rem" }}>
+            Assign a group name when{" "}
+            <Link href="/boards/new" style={{ color: "var(--color-primary)" }}>adding a board</Link>.
+          </p>
         </div>
       ) : (
         <div style={{ display: "grid", gap: "1rem" }}>
           {groups.map((g) => (
-            <div key={g.id} className="panel" style={{ padding: "1.25rem" }}>
-              <h2 style={{ fontWeight: 600, fontSize: "1.0625rem", marginBottom: "0.75rem" }}>
-                {g.name}
-                <span style={{ marginLeft: "0.5rem", fontSize: "0.8rem", color: "var(--color-text-muted)", fontWeight: 400 }}>
-                  {g.memberships.length} board{g.memberships.length !== 1 ? "s" : ""}
-                </span>
-              </h2>
+            <div key={g.id} className="card">
+              <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", marginBottom: "1rem" }}>
+                <h2 style={{ fontWeight: 600, fontSize: "1.0625rem", flex: 1 }}>{g.name}</h2>
+                <span className="badge badge-teal">{g.memberships.length} board{g.memberships.length !== 1 ? "s" : ""}</span>
+              </div>
               <div style={{ display: "grid", gap: "0.4rem" }}>
                 {g.memberships.map((m) => {
                   const lastMs = m.board.lastSeenAt ? now - m.board.lastSeenAt.getTime() : null;
@@ -62,6 +64,7 @@ export default async function GroupsPage() {
                         background: "var(--color-surface-offset)",
                         textDecoration: "none",
                         color: "var(--color-text)",
+                        fontSize: "0.9375rem",
                       }}
                     >
                       <span className={`live-dot ${online ? "live" : "dead"}`} />

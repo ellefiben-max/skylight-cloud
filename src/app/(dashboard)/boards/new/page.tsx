@@ -40,18 +40,21 @@ export default function NewBoardPage() {
   }
 
   return (
-    <div style={{ maxWidth: 480, display: "grid", gap: "1.5rem" }}>
+    <div style={{ maxWidth: 520, display: "grid", gap: "2rem" }}>
       <div>
-        <h1 style={{ fontWeight: 700, fontSize: "1.75rem", letterSpacing: "-0.04em" }}>
-          Add Board
+        <Link href="/boards" style={{ fontSize: "0.875rem", color: "var(--color-text-muted)", textDecoration: "none" }}>
+          ← Back to boards
+        </Link>
+        <h1 style={{ fontWeight: 700, fontSize: "1.75rem", letterSpacing: "-0.04em", marginTop: "0.75rem" }}>
+          Add a Board
         </h1>
-        <p style={{ color: "var(--color-text-muted)", marginTop: "0.25rem" }}>
-          Enter the pairing code shown on your local Skylight board UI.
+        <p style={{ color: "var(--color-text-muted)", marginTop: "0.25rem", fontSize: "0.9375rem" }}>
+          Enter the pairing code shown on your Skylight board's local UI.
         </p>
       </div>
 
-      <div className="panel" style={{ padding: "1.5rem" }}>
-        <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1rem" }}>
+      <div className="card">
+        <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1.25rem" }}>
           <div className="field">
             <label htmlFor="pairingCode">Pairing code *</label>
             <input
@@ -60,12 +63,13 @@ export default function NewBoardPage() {
               required
               placeholder="e.g. ABC123"
               value={form.pairingCode}
-              onChange={(e) => setForm((f) => ({ ...f, pairingCode: e.target.value.trim() }))}
+              onChange={(e) => setForm((f) => ({ ...f, pairingCode: e.target.value.trim().toUpperCase() }))}
+              style={{ fontFamily: "monospace", fontSize: "1.125rem", letterSpacing: "0.15em" }}
             />
           </div>
 
           <div className="field">
-            <label htmlFor="deviceName">Board name (optional)</label>
+            <label htmlFor="deviceName">Board name <span style={{ color: "var(--color-text-faint)", fontWeight: 400 }}>(optional)</span></label>
             <input
               id="deviceName"
               type="text"
@@ -77,7 +81,7 @@ export default function NewBoardPage() {
           </div>
 
           <div className="field">
-            <label htmlFor="groupName">Group (optional)</label>
+            <label htmlFor="groupName">Group <span style={{ color: "var(--color-text-faint)", fontWeight: 400 }}>(optional)</span></label>
             <input
               id="groupName"
               type="text"
@@ -86,27 +90,26 @@ export default function NewBoardPage() {
               value={form.groupName}
               onChange={(e) => setForm((f) => ({ ...f, groupName: e.target.value }))}
             />
+            <span className="field-hint">Boards in the same group can be managed together.</span>
           </div>
 
-          {error && <p className="error-msg">{error}</p>}
+          {error && <div className="alert alert-error">{error}</div>}
 
           <div style={{ display: "flex", gap: "0.75rem" }}>
-            <button type="submit" className="btn btn-primary" disabled={loading}>
+            <button type="submit" className="btn btn-primary" disabled={loading} style={{ flex: 1, justifyContent: "center" }}>
               {loading ? "Adding…" : "Add board"}
             </button>
-            <Link href="/boards" className="btn btn-ghost">
-              Cancel
-            </Link>
+            <Link href="/boards" className="btn btn-ghost">Cancel</Link>
           </div>
         </form>
       </div>
 
-      <div className="panel" style={{ padding: "1.25rem", fontSize: "0.875rem", color: "var(--color-text-muted)" }}>
-        <strong style={{ color: "var(--color-text)" }}>How to get the pairing code:</strong>
-        <ol style={{ paddingLeft: "1.25rem", marginTop: "0.5rem", display: "grid", gap: "0.25rem" }}>
+      <div className="card" style={{ background: "var(--color-surface-offset)", border: "none" }}>
+        <h3 style={{ fontWeight: 600, fontSize: "0.9375rem", marginBottom: "0.75rem" }}>How to get the pairing code</h3>
+        <ol style={{ paddingLeft: "1.25rem", display: "grid", gap: "0.375rem", color: "var(--color-text-muted)", fontSize: "0.9rem" }}>
           <li>Power on your Skylight 100 and connect it to Wi-Fi.</li>
-          <li>Open the local web UI (visit the board's IP address).</li>
-          <li>Find the pairing code in the Cloud Settings section.</li>
+          <li>Open the local web UI (visit the board's IP address in a browser).</li>
+          <li>Find the pairing code in the <strong style={{ color: "var(--color-text)" }}>Cloud Settings</strong> section.</li>
           <li>Enter the code above within 30 minutes.</li>
         </ol>
       </div>

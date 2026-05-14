@@ -2,7 +2,8 @@ import { type NextRequest } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { verifyPassword } from "@/lib/password";
-import { createSession, setSessionCookie } from "@/lib/session";
+import { randomOtp, sha256hex } from "@/lib/crypto";
+import { sendOtpEmail } from "@/lib/email";
 import { rateLimit } from "@/lib/rate-limit";
 import { ok, err } from "@/lib/api-response";
 import { getClientIp } from "@/lib/device-auth";
@@ -15,12 +16,12 @@ const Schema = z.object({
   password: z.string().min(1).max(128),
 });
 
+const OTP_TTL_MS = 10 * 60 * 1000;
+
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
   const rl = rateLimit(`login:${ip}`, 10, 60_000, 5 * 60_000);
-  if (!rl.allowed) {
-    return err("Too many login attempts. Wait a few minutes.", 429);
-  }
+  if (!rl.allowed) return err("Too many login attempts. Wait a few minutes.", 429);
 
   let body: unknown;
   try { body = await req.json(); } catch { return err("Invalid JSON"); }
@@ -31,14 +32,11 @@ export async function POST(req: NextRequest) {
   const { login, password } = parsed.data;
 
   const user = await prisma.user.findFirst({
-    where: {
-      OR: [{ email: login.toLowerCase() }, { username: login }],
-    },
+    where: { OR: [{ email: login.toLowerCase() }, { username: login }] },
   });
 
-  const SLOW_RESPONSE_MS = 300;
   if (!user) {
-    await new Promise((r) => setTimeout(r, SLOW_RESPONSE_MS));
+    await new Promise((r) => setTimeout(r, 300));
     return err("Invalid credentials", 401);
   }
 
@@ -46,32 +44,26 @@ export async function POST(req: NextRequest) {
   if (!valid) {
     const userRl = rateLimit(`login:user:${user.id}`, 5, 10 * 60_000, 15 * 60_000);
     if (!userRl.allowed) {
-      await logAuditEvent({
-        userId: user.id,
-        eventType: "auth.login_locked",
-        ipAddress: ip,
-        userAgent: req.headers.get("user-agent") ?? "",
-      });
+      await logAuditEvent({ userId: user.id, eventType: "auth.login_locked", ipAddress: ip, userAgent: req.headers.get("user-agent") ?? "" });
     }
     return err("Invalid credentials", 401);
   }
 
-  if (!user.emailVerifiedAt) {
-    return err("Please verify your email before logging in.", 403);
-  }
+  if (!user.emailVerifiedAt) return err("Please verify your email before logging in.", 403);
 
-  const sessionToken = await createSession(user.id, {
-    ip,
-    ua: req.headers.get("user-agent") ?? "",
-  });
-  await setSessionCookie(sessionToken);
+  await prisma.otpChallenge.deleteMany({ where: { userId: user.id, usedAt: null } });
 
-  await logAuditEvent({
-    userId: user.id,
-    eventType: "auth.login_success",
-    ipAddress: ip,
-    userAgent: req.headers.get("user-agent") ?? "",
+  const otp = randomOtp(6);
+  const tokenHash = sha256hex(otp);
+  const expiresAt = new Date(Date.now() + OTP_TTL_MS);
+
+  await prisma.otpChallenge.create({ data: { userId: user.id, tokenHash, expiresAt } });
+
+  await sendOtpEmail(user.email, otp).catch((e) => {
+    console.error("[login] Failed to send OTP:", e);
   });
 
-  return ok({ message: "Logged in." });
+  await logAuditEvent({ userId: user.id, eventType: "auth.otp_sent", ipAddress: ip, userAgent: req.headers.get("user-agent") ?? "" });
+
+  return ok({ userId: user.id, message: "OTP sent to your email." });
 }

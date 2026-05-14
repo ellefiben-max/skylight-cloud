@@ -18,7 +18,6 @@ function VerifyContent() {
     if (!token || attempted.current) return;
     attempted.current = true;
     setStatus("loading");
-
     fetch("/api/auth/verify-email", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -26,56 +25,60 @@ function VerifyContent() {
     })
       .then((r) => r.json())
       .then((d) => {
-        if (d.ok) {
-          setStatus("success");
-          setMessage(d.data?.message ?? "Email verified.");
-        } else {
-          setStatus("error");
-          setMessage(d.error ?? "Verification failed.");
-        }
+        if (d.ok) { setStatus("success"); setMessage(d.data?.message ?? "Email verified."); }
+        else { setStatus("error"); setMessage(d.error ?? "Verification failed."); }
       })
-      .catch(() => {
-        setStatus("error");
-        setMessage("Network error.");
-      });
+      .catch(() => { setStatus("error"); setMessage("Network error."); });
   }, [token]);
 
   if (!token) {
     return (
-      <div className="panel" style={{ padding: "2rem", display: "grid", gap: "1rem" }}>
-        <h1 style={{ fontWeight: 700, fontSize: "1.5rem" }}>Invalid link</h1>
-        <p style={{ color: "var(--color-text-muted)" }}>
-          No verification token found. Check your email for the correct link.
-        </p>
+      <div style={{ display: "grid", gap: "1.5rem" }}>
+        <div style={{ fontSize: "2rem" }}>⚠️</div>
+        <div>
+          <h1 style={{ fontSize: "1.5rem", fontWeight: 700, letterSpacing: "-0.04em", marginBottom: "0.5rem" }}>Invalid link</h1>
+          <p style={{ color: "var(--color-text-muted)" }}>No verification token found. Check your email for the correct link.</p>
+        </div>
+        <Link href="/signup" className="btn btn-ghost">Back to signup</Link>
       </div>
     );
   }
 
   return (
-    <div className="panel" style={{ padding: "2rem", display: "grid", gap: "1.5rem" }}>
-      <h1 style={{ fontWeight: 700, fontSize: "1.75rem", letterSpacing: "-0.04em" }}>
-        Email Verification
-      </h1>
-
+    <div style={{ display: "grid", gap: "1.75rem" }}>
       {status === "loading" && (
-        <p style={{ color: "var(--color-text-muted)" }}>Verifying…</p>
+        <>
+          <div style={{ display: "flex", justifyContent: "center" }}><div className="spinner" /></div>
+          <div style={{ textAlign: "center" }}>
+            <h1 style={{ fontSize: "1.5rem", fontWeight: 700, letterSpacing: "-0.04em", marginBottom: "0.5rem" }}>Verifying…</h1>
+            <p style={{ color: "var(--color-text-muted)" }}>Please wait while we verify your email.</p>
+          </div>
+        </>
       )}
 
       {status === "success" && (
         <>
-          <p style={{ color: "var(--color-success)" }}>{message}</p>
-          <Link href="/login" className="btn btn-primary" style={{ textAlign: "center" }}>
-            Sign In
-          </Link>
+          <div style={{ width: 52, height: 52, borderRadius: 13, background: "var(--color-success-dim)",
+            border: "1px solid rgba(74,222,128,0.3)", display: "flex", alignItems: "center",
+            justifyContent: "center", fontSize: "1.625rem" }}>✓</div>
+          <div>
+            <h1 style={{ fontSize: "1.5rem", fontWeight: 700, letterSpacing: "-0.04em", marginBottom: "0.5rem", color: "var(--color-success)" }}>
+              Email verified!
+            </h1>
+            <p style={{ color: "var(--color-text-muted)" }}>{message} You can now sign in to your account.</p>
+          </div>
+          <Link href="/login" className="btn btn-primary" style={{ textAlign: "center" }}>Sign in now</Link>
         </>
       )}
 
       {status === "error" && (
         <>
-          <p className="error-msg">{message}</p>
-          <Link href="/signup" className="btn btn-ghost" style={{ textAlign: "center" }}>
-            Back to Signup
-          </Link>
+          <div style={{ fontSize: "2rem" }}>❌</div>
+          <div>
+            <h1 style={{ fontSize: "1.5rem", fontWeight: 700, letterSpacing: "-0.04em", marginBottom: "0.5rem" }}>Verification failed</h1>
+            <div className="alert alert-error">{message}</div>
+          </div>
+          <Link href="/signup" className="btn btn-ghost" style={{ textAlign: "center" }}>Back to signup</Link>
         </>
       )}
     </div>
@@ -83,9 +86,5 @@ function VerifyContent() {
 }
 
 export default function VerifyEmailPage() {
-  return (
-    <Suspense>
-      <VerifyContent />
-    </Suspense>
-  );
+  return <Suspense><VerifyContent /></Suspense>;
 }

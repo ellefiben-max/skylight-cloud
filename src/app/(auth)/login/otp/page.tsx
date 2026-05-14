@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
@@ -27,11 +28,8 @@ function OtpContent() {
         body: JSON.stringify({ userId, otp }),
       });
       const data = await res.json();
-      if (!res.ok) {
-        setError(data.error ?? "Invalid code.");
-      } else {
-        router.push(next);
-      }
+      if (!res.ok) setError(data.error ?? "Invalid code.");
+      else router.push(next);
     } catch {
       setError("Network error. Try again.");
     } finally {
@@ -40,19 +38,24 @@ function OtpContent() {
   }
 
   return (
-    <div className="panel" style={{ padding: "2rem", display: "grid", gap: "1.5rem" }}>
+    <div style={{ display: "grid", gap: "2rem" }}>
       <div>
-        <h1 style={{ fontWeight: 700, fontSize: "1.75rem", letterSpacing: "-0.04em" }}>
-          Verification code
+        <div style={{ width: 48, height: 48, borderRadius: 12, background: "var(--color-primary-dim)",
+          border: "1px solid var(--color-primary-border)", display: "flex", alignItems: "center",
+          justifyContent: "center", fontSize: "1.375rem", marginBottom: "1.25rem" }}>
+          🔑
+        </div>
+        <h1 style={{ fontSize: "1.625rem", fontWeight: 700, letterSpacing: "-0.04em", marginBottom: "0.375rem" }}>
+          Check your email
         </h1>
-        <p style={{ color: "var(--color-text-muted)", marginTop: "0.25rem" }}>
-          Enter the 6-digit code sent to your email.
+        <p style={{ color: "var(--color-text-muted)", fontSize: "0.9375rem", lineHeight: 1.6 }}>
+          We sent a 6-digit code to your email address. Enter it below to sign in.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1rem" }}>
+      <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1.25rem" }}>
         <div className="field">
-          <label htmlFor="otp">One-time code</label>
+          <label htmlFor="otp">Verification code</label>
           <input
             id="otp"
             type="text"
@@ -61,30 +64,29 @@ function OtpContent() {
             maxLength={6}
             autoComplete="one-time-code"
             required
+            placeholder="000000"
             value={otp}
             onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-            style={{ fontSize: "1.5rem", letterSpacing: "0.25em", textAlign: "center" }}
+            style={{ fontSize: "1.75rem", letterSpacing: "0.35em", textAlign: "center", fontWeight: 700 }}
           />
         </div>
 
-        {error && <p className="error-msg">{error}</p>}
+        {error && <div className="alert alert-error">{error}</div>}
 
-        <button type="submit" className="btn btn-primary" disabled={loading || otp.length !== 6}>
-          {loading ? "Verifying…" : "Verify"}
+        <button type="submit" className="btn btn-primary" disabled={loading || otp.length !== 6}
+          style={{ width: "100%", justifyContent: "center", padding: "0.6875rem" }}>
+          {loading ? "Verifying…" : "Verify & sign in"}
         </button>
       </form>
 
-      <p style={{ color: "var(--color-text-faint)", fontSize: "0.8125rem", textAlign: "center" }}>
-        Code expires in 10 minutes.
-      </p>
+      <div style={{ display: "grid", gap: "0.5rem", textAlign: "center" }}>
+        <p style={{ fontSize: "0.8125rem", color: "var(--color-text-faint)" }}>Code expires in 10 minutes.</p>
+        <Link href="/login" style={{ fontSize: "0.875rem", color: "var(--color-text-muted)" }}>← Back to sign in</Link>
+      </div>
     </div>
   );
 }
 
 export default function OtpPage() {
-  return (
-    <Suspense>
-      <OtpContent />
-    </Suspense>
-  );
+  return <Suspense><OtpContent /></Suspense>;
 }
