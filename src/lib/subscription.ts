@@ -4,6 +4,8 @@ const ACTIVE_STATUSES = new Set(["active", "trialing"]);
 const GRACE_STATUSES = new Set(["past_due"]);
 
 export async function hasActiveSubscription(organizationId: string): Promise<boolean> {
+  if (process.env.PAYWALL_DISABLED !== "false") return true;
+
   const sub = await prisma.subscription.findUnique({ where: { organizationId } });
   if (!sub) return false;
   if (ACTIVE_STATUSES.has(sub.status)) return true;

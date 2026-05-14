@@ -5,7 +5,10 @@ import { prisma } from "@/lib/db";
 const mockPrisma = prisma as unknown as Record<string, Record<string, ReturnType<typeof vi.fn>>>;
 
 describe("hasActiveSubscription", () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    process.env.PAYWALL_DISABLED = "false";
+  });
 
   it("returns false when no subscription exists", async () => {
     mockPrisma.subscription.findUnique.mockResolvedValue(null);

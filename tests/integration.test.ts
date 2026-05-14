@@ -28,7 +28,10 @@ import { prisma } from "@/lib/db";
 const mockPrisma = prisma as unknown as Record<string, Record<string, ReturnType<typeof vi.fn>>>;
 
 describe("Integration: signup → verify → login → subscribe → board → command", () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    process.env.PAYWALL_DISABLED = "false";
+  });
 
   it("Step 1-2: Signup creates user and email token", async () => {
     const { hashPassword: hp } = await import("@/lib/password");
