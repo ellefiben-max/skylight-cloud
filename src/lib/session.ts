@@ -1,8 +1,8 @@
 import { cookies } from "next/headers";
 import { prisma } from "./db";
 import { randomToken, sha256hex } from "./crypto";
+import { SESSION_COOKIE } from "./constants";
 
-const SESSION_COOKIE = "skylight_session";
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000; // 8 hours
 
 export async function createSession(
