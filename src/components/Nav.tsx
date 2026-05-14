@@ -8,6 +8,7 @@ const LINKS = [
   { href: "/boards", label: "Boards" },
   { href: "/groups", label: "Groups" },
   { href: "/billing", label: "Billing" },
+  { href: "/settings/account", label: "Account" },
 ];
 
 export function Nav() {
@@ -68,13 +69,6 @@ export function Nav() {
 
         {/* Right side */}
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexShrink: 0 }}>
-          <Link href="/settings/account" style={{
-            padding: "0.375rem 0.75rem", borderRadius: 6,
-            fontSize: "0.875rem", color: "var(--color-text-muted)",
-            textDecoration: "none", transition: "color 0.15s",
-          }}>
-            Settings
-          </Link>
           <button onClick={handleLogout} style={{
             padding: "0.375rem 0.875rem", borderRadius: 6,
             fontSize: "0.875rem", fontWeight: 500,

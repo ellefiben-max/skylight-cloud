@@ -41,6 +41,7 @@ export async function getSessionUser(): Promise<{
   id: string;
   username: string;
   email: string;
+  phone: string;
   emailVerifiedAt: Date | null;
   orgId: string | null;
 } | null> {
@@ -78,6 +79,7 @@ export async function getSessionUser(): Promise<{
     id: session.user.id,
     username: session.user.username,
     email: session.user.email,
+    phone: session.user.phone,
     emailVerifiedAt: session.user.emailVerifiedAt,
     orgId,
   };
