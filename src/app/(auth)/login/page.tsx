@@ -30,7 +30,7 @@ function LoginContent() {
       if (!res.ok) {
         setError(data.error ?? "Login failed.");
       } else {
-        router.push(`/login/otp?userId=${data.data.userId}&next=${encodeURIComponent(next)}`);
+        router.push(next);
       }
     } catch {
       setError("Network error. Try again.");
