@@ -39,3 +39,4 @@ databases:
     plan: free
     databaseName: skylight_cloud
     user: skylight
+
