@@ -8,6 +8,8 @@ import { getClientIp } from "@/lib/device-auth";
 
 export const dynamic = "force-dynamic";
 
+const BOOTSTRAP_RATE_LIMIT = 120;
+
 const Schema = z.object({
   eventType: z.string().optional(),
   boardId: z.string().min(1).max(128),
@@ -25,10 +27,6 @@ const Schema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  const ip = getClientIp(req);
-  const rl = rateLimit(`bootstrap:${ip}`, 30, 60_000);
-  if (!rl.allowed) return err("Rate limited", 429);
-
   let body: unknown;
   try { body = await req.json(); } catch { return err("Invalid JSON"); }
 
@@ -36,6 +34,10 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) return err("Invalid bootstrap payload", 422);
 
   const d = parsed.data;
+  const ip = getClientIp(req);
+  const rl = rateLimit(`bootstrap:${d.boardId}:${ip}`, BOOTSTRAP_RATE_LIMIT, 60_000);
+  if (!rl.allowed) return err("Rate limited", 429);
+
   const boardSecretHash = sha256hex(d.boardSecret);
   const pairingCode = d.pairingCode?.trim().toUpperCase();
   const pairingCodeHash = pairingCode ? sha256hex(pairingCode) : "";

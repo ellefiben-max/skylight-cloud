@@ -32,7 +32,7 @@ export async function authenticateDevice(
   }
 
   const rlKey = `device:${boardId}`;
-  const rl = rateLimit(rlKey, 60, 60_000);
+  const rl = rateLimit(rlKey, 240, 60_000);
   if (!rl.allowed) {
     return { ok: false, status: 429, error: "Too many requests" };
   }
