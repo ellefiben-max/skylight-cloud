@@ -36,7 +36,10 @@ export async function POST(req: NextRequest) {
   const d = parsed.data;
   const ip = getClientIp(req);
   const rl = rateLimit(`bootstrap:${d.boardId}:${ip}`, BOOTSTRAP_RATE_LIMIT, 60_000);
-  if (!rl.allowed) return err("Rate limited", 429);
+  if (!rl.allowed) {
+    console.warn("[BOARD_BOOTSTRAP] Rate limited", { boardId: d.boardId, ip });
+    return err("Rate limited", 429);
+  }
 
   const boardSecretHash = sha256hex(d.boardSecret);
   const pairingCode = d.pairingCode?.trim().toUpperCase();
@@ -47,6 +50,12 @@ export async function POST(req: NextRequest) {
   if (existing) {
     // Validate secret before updating
     if (existing.boardSecretHash && existing.boardSecretHash !== boardSecretHash) {
+      console.warn("[BOARD_BOOTSTRAP] Invalid board secret", {
+        boardId: d.boardId,
+        claimed: !!existing.claimedAt,
+        hasOrg: !!existing.organizationId,
+        lastSeenAt: existing.lastSeenAt?.toISOString() ?? null,
+      });
       return err("Invalid board secret", 401);
     }
 
@@ -65,6 +74,12 @@ export async function POST(req: NextRequest) {
         freePsram: d.freePsram ?? existing.freePsram,
         lastSeenAt: new Date(),
       },
+    });
+
+    console.info("[BOARD_BOOTSTRAP] Updated board", {
+      boardId: d.boardId,
+      claimed: !!existing.organizationId,
+      pairingCodePresent: !!pairingCode,
     });
 
     return ok({ claimed: !!existing.organizationId, boardId: d.boardId });
@@ -86,6 +101,11 @@ export async function POST(req: NextRequest) {
       freePsram: d.freePsram ?? 0,
       lastSeenAt: new Date(),
     },
+  });
+
+  console.info("[BOARD_BOOTSTRAP] Created board", {
+    boardId: d.boardId,
+    pairingCodePresent: !!pairingCode,
   });
 
   return ok({ claimed: false, boardId: d.boardId }, 201);

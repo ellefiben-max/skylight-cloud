@@ -41,9 +41,35 @@ export async function POST(req: NextRequest) {
         { organizationId: user.orgId },
       ],
     },
+    orderBy: { lastSeenAt: "desc" },
   });
 
-  if (!board) return err("Invalid or expired pairing code.", 404);
+  if (!board) {
+    const anyMatches = await prisma.board.findMany({
+      where: { pairingCodeHash },
+      orderBy: { lastSeenAt: "desc" },
+      take: 3,
+      select: {
+        boardId: true,
+        organizationId: true,
+        claimedAt: true,
+        lastSeenAt: true,
+        updatedAt: true,
+      },
+    });
+    console.warn("[BOARD_CLAIM] Pairing code not claimable", {
+      requestedOrgId: user.orgId,
+      matches: anyMatches.map((match) => ({
+        boardId: match.boardId,
+        orgMatches: match.organizationId === user.orgId,
+        claimed: !!match.claimedAt,
+        hasOrg: !!match.organizationId,
+        lastSeenAt: match.lastSeenAt?.toISOString() ?? null,
+        updatedAt: match.updatedAt.toISOString(),
+      })),
+    });
+    return err("Invalid or expired pairing code.", 404);
+  }
 
   if (board.organizationId && board.organizationId !== user.orgId) {
     return err("Board is already claimed by another organization.", 409);
