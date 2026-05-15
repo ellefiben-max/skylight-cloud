@@ -239,8 +239,14 @@ describe("Board heartbeat pairing repair", () => {
     mockPrisma.boardHeartbeat.create.mockResolvedValue({});
 
     const response = await POST(heartbeatRequest(" abc123 "));
+    const body = await response.json();
 
     expect(response.status).toBe(200);
+    expect(body.data).toMatchObject({
+      claimed: false,
+      boardId: "board-1",
+      pendingCommands: 0,
+    });
     expect(mockPrisma.board.update).toHaveBeenCalledWith(expect.objectContaining({
       where: { id: "board-db-id" },
       data: expect.objectContaining({
@@ -266,8 +272,14 @@ describe("Board heartbeat pairing repair", () => {
     mockPrisma.boardHeartbeat.create.mockResolvedValue({});
 
     const response = await POST(heartbeatRequest("abc123"));
+    const body = await response.json();
 
     expect(response.status).toBe(200);
+    expect(body.data).toMatchObject({
+      claimed: true,
+      boardId: "board-1",
+      pendingCommands: 0,
+    });
     const updateArg = mockPrisma.board.update.mock.calls.at(-1)?.[0];
     expect(updateArg.data).not.toHaveProperty("pairingCodeHash");
     expect(updateArg.data).not.toHaveProperty("pairingExpiresAt");

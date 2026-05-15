@@ -54,5 +54,9 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  return ok({ pendingCommands: pendingCount });
+  return ok({
+    pendingCommands: pendingCount,
+    claimed: !!auth.board.organizationId,
+    boardId: auth.board.boardId,
+  });
 }
