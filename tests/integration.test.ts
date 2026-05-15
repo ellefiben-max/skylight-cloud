@@ -120,6 +120,70 @@ describe("Security: board ownership enforcement", () => {
   });
 });
 
+describe("Board heartbeat pairing repair", () => {
+  function heartbeatRequest(pairingCode: string) {
+    return new Request("http://localhost/api/boards/heartbeat", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-skylight-board-id": "board-1",
+        "x-skylight-board-secret": "secret-a",
+      },
+      body: JSON.stringify({ pairingCode, freeHeap: 1234 }),
+    }) as never;
+  }
+
+  it("refreshes the normalized pairing hash for unclaimed boards", async () => {
+    const { POST } = await import("@/app/api/boards/heartbeat/route");
+    mockPrisma.board.findUnique.mockResolvedValue({
+      id: "board-db-id",
+      boardId: "board-1",
+      boardSecretHash: sha256hex("secret-a"),
+      organizationId: null,
+      deviceName: "Skylight 100",
+      model: "waveshare-main",
+      firmwareVersion: "1.0.0",
+    });
+    mockPrisma.boardCommand.count.mockResolvedValue(0);
+    mockPrisma.board.update.mockResolvedValue({});
+    mockPrisma.boardHeartbeat.create.mockResolvedValue({});
+
+    const response = await POST(heartbeatRequest(" abc123 "));
+
+    expect(response.status).toBe(200);
+    expect(mockPrisma.board.update).toHaveBeenCalledWith(expect.objectContaining({
+      where: { id: "board-db-id" },
+      data: expect.objectContaining({
+        pairingCodeHash: sha256hex("ABC123"),
+        pairingExpiresAt: null,
+      }),
+    }));
+  });
+
+  it("does not rewrite pairing data for claimed boards", async () => {
+    const { POST } = await import("@/app/api/boards/heartbeat/route");
+    mockPrisma.board.findUnique.mockResolvedValue({
+      id: "board-db-id",
+      boardId: "board-1",
+      boardSecretHash: sha256hex("secret-a"),
+      organizationId: "org-1",
+      deviceName: "Skylight 100",
+      model: "waveshare-main",
+      firmwareVersion: "1.0.0",
+    });
+    mockPrisma.boardCommand.count.mockResolvedValue(0);
+    mockPrisma.board.update.mockResolvedValue({});
+    mockPrisma.boardHeartbeat.create.mockResolvedValue({});
+
+    const response = await POST(heartbeatRequest("abc123"));
+
+    expect(response.status).toBe(200);
+    const updateArg = mockPrisma.board.update.mock.calls.at(-1)?.[0];
+    expect(updateArg.data).not.toHaveProperty("pairingCodeHash");
+    expect(updateArg.data).not.toHaveProperty("pairingExpiresAt");
+  });
+});
+
 describe("Billing: pricing tiers", () => {
   const cases: [number, number, number][] = [
     [1, 1000, 1000],

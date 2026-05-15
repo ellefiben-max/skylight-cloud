@@ -46,6 +46,9 @@ vi.mock("@/lib/db", () => ({
       updateMany: vi.fn(),
       count: vi.fn(),
     },
+    boardHeartbeat: {
+      create: vi.fn(),
+    },
     boardLog: {
       findMany: vi.fn(),
       create: vi.fn(),

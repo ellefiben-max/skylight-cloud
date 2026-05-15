@@ -2,6 +2,7 @@ import { type NextRequest } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { authenticateDevice } from "@/lib/device-auth";
+import { sha256hex } from "@/lib/crypto";
 import { ok, err } from "@/lib/api-response";
 
 export const dynamic = "force-dynamic";
@@ -10,6 +11,7 @@ const Schema = z.object({
   freeHeap: z.number().int().optional(),
   freePsram: z.number().int().optional(),
   staIp: z.string().max(64).optional(),
+  pairingCode: z.string().max(64).optional(),
   statusJson: z.record(z.unknown()).optional(),
 });
 
@@ -33,6 +35,10 @@ export async function POST(req: NextRequest) {
       ...(d.freeHeap !== undefined && { freeHeap: d.freeHeap }),
       ...(d.freePsram !== undefined && { freePsram: d.freePsram }),
       ...(d.staIp !== undefined && { staIp: d.staIp }),
+      ...(d.pairingCode && !auth.board.organizationId && {
+        pairingCodeHash: sha256hex(d.pairingCode.trim().toUpperCase()),
+        pairingExpiresAt: null,
+      }),
       ...(d.statusJson !== undefined && { statusJson: JSON.stringify(d.statusJson) }),
     },
   });
