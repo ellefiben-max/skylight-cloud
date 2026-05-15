@@ -26,6 +26,40 @@ const Schema = z.object({
   freePsram: z.number().int().optional(),
 });
 
+type BoardBootstrapFallback = {
+  pairingCodeHash: string;
+  pairingExpiresAt: Date | null;
+  firmwareVersion: string;
+  model: string;
+  deviceName: string;
+  staIp: string;
+  apSsid: string;
+  freeHeap: number;
+  freePsram: number;
+};
+
+function boardUpdateData(
+  d: z.infer<typeof Schema>,
+  boardSecretHash: string,
+  pairingCodeHash: string,
+  fallback: BoardBootstrapFallback,
+  pairingCodePresent: boolean
+) {
+  return {
+    boardSecretHash,
+    pairingCodeHash: pairingCodePresent ? pairingCodeHash : fallback.pairingCodeHash,
+    pairingExpiresAt: pairingCodePresent ? null : fallback.pairingExpiresAt,
+    firmwareVersion: d.firmwareVersion ?? fallback.firmwareVersion,
+    model: d.model ?? fallback.model,
+    deviceName: d.deviceName ?? fallback.deviceName,
+    staIp: d.staIp ?? fallback.staIp,
+    apSsid: d.apSsid ?? fallback.apSsid,
+    freeHeap: d.freeHeap ?? fallback.freeHeap,
+    freePsram: d.freePsram ?? fallback.freePsram,
+    lastSeenAt: new Date(),
+  };
+}
+
 export async function POST(req: NextRequest) {
   let body: unknown;
   try { body = await req.json(); } catch { return err("Invalid JSON"); }
@@ -48,32 +82,31 @@ export async function POST(req: NextRequest) {
   const existing = await prisma.board.findUnique({ where: { boardId: d.boardId } });
 
   if (existing) {
-    // Validate secret before updating
+    const canRepairUnclaimedSecret =
+      !existing.organizationId &&
+      !!pairingCode &&
+      existing.pairingCodeHash === pairingCodeHash;
+
     if (existing.boardSecretHash && existing.boardSecretHash !== boardSecretHash) {
-      console.warn("[BOARD_BOOTSTRAP] Invalid board secret", {
-        boardId: d.boardId,
-        claimed: !!existing.claimedAt,
-        hasOrg: !!existing.organizationId,
-        lastSeenAt: existing.lastSeenAt?.toISOString() ?? null,
-      });
-      return err("Invalid board secret", 401);
+      if (canRepairUnclaimedSecret) {
+        console.warn("[BOARD_BOOTSTRAP] Repaired unclaimed board secret", {
+          boardId: d.boardId,
+          lastSeenAt: existing.lastSeenAt?.toISOString() ?? null,
+        });
+      } else {
+        console.warn("[BOARD_BOOTSTRAP] Invalid board secret", {
+          boardId: d.boardId,
+          claimed: !!existing.claimedAt,
+          hasOrg: !!existing.organizationId,
+          lastSeenAt: existing.lastSeenAt?.toISOString() ?? null,
+        });
+        return err("Invalid board secret", 401);
+      }
     }
 
     await prisma.board.update({
       where: { boardId: d.boardId },
-      data: {
-        boardSecretHash,
-        pairingCodeHash: pairingCode ? pairingCodeHash : existing.pairingCodeHash,
-        pairingExpiresAt: pairingCode ? null : existing.pairingExpiresAt,
-        firmwareVersion: d.firmwareVersion ?? existing.firmwareVersion,
-        model: d.model ?? existing.model,
-        deviceName: d.deviceName ?? existing.deviceName,
-        staIp: d.staIp ?? existing.staIp,
-        apSsid: d.apSsid ?? existing.apSsid,
-        freeHeap: d.freeHeap ?? existing.freeHeap,
-        freePsram: d.freePsram ?? existing.freePsram,
-        lastSeenAt: new Date(),
-      },
+      data: boardUpdateData(d, boardSecretHash, pairingCodeHash, existing, !!pairingCode),
     });
 
     console.info("[BOARD_BOOTSTRAP] Updated board", {
@@ -83,6 +116,33 @@ export async function POST(req: NextRequest) {
     });
 
     return ok({ claimed: !!existing.organizationId, boardId: d.boardId });
+  }
+
+  if (pairingCode) {
+    const staleUnclaimedBoard = await prisma.board.findFirst({
+      where: {
+        pairingCodeHash,
+        organizationId: null,
+      },
+      orderBy: { lastSeenAt: "desc" },
+    });
+
+    if (staleUnclaimedBoard) {
+      await prisma.board.update({
+        where: { id: staleUnclaimedBoard.id },
+        data: {
+          boardId: d.boardId,
+          ...boardUpdateData(d, boardSecretHash, pairingCodeHash, staleUnclaimedBoard, true),
+        },
+      });
+
+      console.warn("[BOARD_BOOTSTRAP] Repaired unclaimed board identity", {
+        oldBoardId: staleUnclaimedBoard.boardId,
+        boardId: d.boardId,
+      });
+
+      return ok({ claimed: false, boardId: d.boardId });
+    }
   }
 
   // New board — create unclaimed record

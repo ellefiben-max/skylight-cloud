@@ -27,9 +27,12 @@ import { prisma } from "@/lib/db";
 
 const mockPrisma = prisma as unknown as Record<string, Record<string, ReturnType<typeof vi.fn>>>;
 
+beforeEach(() => {
+  vi.clearAllMocks();
+});
+
 describe("Integration: signup → verify → login → subscribe → board → command", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     process.env.PAYWALL_DISABLED = "false";
   });
 
@@ -117,6 +120,93 @@ describe("Security: board ownership enforcement", () => {
     const storedHash = sha256hex("secret-b");
     const presented = sha256hex(realSecret);
     expect(presented).not.toBe(storedHash);
+  });
+});
+
+describe("Board bootstrap self-generated API key repair", () => {
+  function bootstrapRequest(body: Record<string, unknown>) {
+    return new Request("http://localhost/api/boards/bootstrap", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        boardId: "board-1",
+        boardSecret: "secret-a",
+        pairingCode: "PAIR123",
+        ...body,
+      }),
+    }) as never;
+  }
+
+  function board(overrides: Record<string, unknown> = {}) {
+    return {
+      id: "board-db-id",
+      boardId: "board-1",
+      boardSecretHash: sha256hex("old-secret"),
+      pairingCodeHash: sha256hex("PAIR123"),
+      pairingExpiresAt: null,
+      organizationId: null,
+      claimedAt: null,
+      firmwareVersion: "1.0.0",
+      model: "waveshare-main",
+      deviceName: "Skylight 100",
+      staIp: "",
+      apSsid: "",
+      freeHeap: 0,
+      freePsram: 0,
+      lastSeenAt: new Date("2026-05-15T00:00:00Z"),
+      ...overrides,
+    };
+  }
+
+  it("repairs a changed API key while the board is unclaimed and pairing code matches", async () => {
+    const { POST } = await import("@/app/api/boards/bootstrap/route");
+    mockPrisma.board.findUnique.mockResolvedValue(board());
+    mockPrisma.board.update.mockResolvedValue({});
+
+    const response = await POST(bootstrapRequest({ boardId: "board-repair-1" }));
+
+    expect(response.status).toBe(200);
+    expect(mockPrisma.board.update).toHaveBeenCalledWith(expect.objectContaining({
+      where: { boardId: "board-repair-1" },
+      data: expect.objectContaining({
+        boardSecretHash: sha256hex("secret-a"),
+        pairingCodeHash: sha256hex("PAIR123"),
+        pairingExpiresAt: null,
+      }),
+    }));
+  });
+
+  it("rejects a changed API key after the board is claimed", async () => {
+    const { POST } = await import("@/app/api/boards/bootstrap/route");
+    mockPrisma.board.findUnique.mockResolvedValue(board({
+      organizationId: "org-1",
+      claimedAt: new Date("2026-05-15T00:00:00Z"),
+    }));
+
+    const response = await POST(bootstrapRequest({ boardId: "board-claimed-1" }));
+
+    expect(response.status).toBe(401);
+    expect(mockPrisma.board.update).not.toHaveBeenCalled();
+  });
+
+  it("reattaches a stale unclaimed row when board ID changed but pairing code matches", async () => {
+    const { POST } = await import("@/app/api/boards/bootstrap/route");
+    mockPrisma.board.findUnique.mockResolvedValue(null);
+    mockPrisma.board.findFirst.mockResolvedValue(board({ boardId: "old-board-id" }));
+    mockPrisma.board.update.mockResolvedValue({});
+
+    const response = await POST(bootstrapRequest({ boardId: "new-board-id" }));
+
+    expect(response.status).toBe(200);
+    expect(mockPrisma.board.update).toHaveBeenCalledWith(expect.objectContaining({
+      where: { id: "board-db-id" },
+      data: expect.objectContaining({
+        boardId: "new-board-id",
+        boardSecretHash: sha256hex("secret-a"),
+        pairingCodeHash: sha256hex("PAIR123"),
+      }),
+    }));
+    expect(mockPrisma.board.create).not.toHaveBeenCalled();
   });
 });
 
