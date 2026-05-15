@@ -209,6 +209,15 @@ article.relay-card.on::before{content:"";position:absolute;inset:auto -20px -55p
 
 /* Settings section */
 .settings-section-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.16em;color:var(--color-text-faint);padding:.25rem 0;margin-top:.25rem;font-weight:700}
+.wifi-scan-head{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap}
+.wifi-scan-list{display:grid;gap:.5rem}
+.wifi-network{width:100%;padding:.75rem .875rem;border-radius:14px;background:linear-gradient(180deg,var(--color-surface-2),var(--color-surface-offset));border:1px solid color-mix(in oklab,var(--color-text) 10%,transparent);display:grid;grid-template-columns:1fr auto;gap:.5rem;text-align:left}
+.wifi-network:hover{border-color:color-mix(in oklab,var(--color-primary) 45%,transparent)}
+.wifi-network.current{border-color:color-mix(in oklab,var(--color-success) 44%,transparent);box-shadow:inset 0 0 0 1px color-mix(in oklab,var(--color-success) 18%,transparent)}
+.wifi-network-main{display:grid;gap:2px;min-width:0}
+.wifi-network-ssid{font-weight:700;overflow-wrap:anywhere}
+.wifi-network-meta{font-size:.72rem;color:var(--color-text-muted)}
+.wifi-signal{font-size:.72rem;font-weight:700;color:var(--color-primary);align-self:center;white-space:nowrap}
 
 /* nav */
 .footer-nav{position:sticky;bottom:0;padding-bottom:max(.75rem,env(safe-area-inset-bottom));background:linear-gradient(to top,var(--color-bg) 78%,transparent)}
@@ -513,6 +522,18 @@ article.relay-card.on::before{content:"";position:absolute;inset:auto -20px -55p
           <div class="settings-section-label">Home WiFi (for NTP sync)</div>
           <div class="field"><label class="label" for="wifiSsidInput">Home WiFi SSID</label><input id="wifiSsidInput" type="text" placeholder="MyHomeNetwork" autocomplete="off"></div>
           <div class="field"><label class="label" for="wifiPassInput">Home WiFi Password</label><input id="wifiPassInput" type="password" placeholder="Leave blank to keep current" autocomplete="new-password"></div>
+          <div class="sched-card" style="padding:.875rem">
+            <div class="wifi-scan-head">
+              <div>
+                <div class="sched-card-title">Available WiFi</div>
+                <div class="tiny" id="wifiScanStatus">Tap scan to find nearby networks.</div>
+              </div>
+              <button class="btn" id="scanWifiBtn" type="button">Scan</button>
+            </div>
+            <div class="wifi-scan-list" id="wifiScanList">
+              <div class="tiny">No scan results yet.</div>
+            </div>
+          </div>
 
           <div class="divider"></div>
           <div class="settings-section-label">Cloud Access</div>
@@ -1559,6 +1580,68 @@ document.getElementById('exportRelayLogBtn').addEventListener('click', () => {
 });
 
 // Settings
+let wifiScanLoaded = false;
+
+function wifiSignalLabel(rssi) {
+  if (rssi >= -55) return 'Strong';
+  if (rssi >= -70) return 'Good';
+  if (rssi >= -82) return 'Weak';
+  return 'Low';
+}
+
+function renderWifiNetworks(networks) {
+  const list = document.getElementById('wifiScanList');
+  const status = document.getElementById('wifiScanStatus');
+  if (!list || !status) return;
+  if (!networks.length) {
+    list.innerHTML = '<div class="tiny">No WiFi networks found.</div>';
+    status.textContent = 'No networks found. Try scanning again.';
+    return;
+  }
+  status.textContent = `${networks.length} network${networks.length === 1 ? '' : 's'} found. Tap one to use its SSID.`;
+  list.innerHTML = networks.map((n, i) => `
+    <button class="wifi-network ${n.current ? 'current' : ''}" type="button" data-ssid="${escHtml(n.ssid || '')}" data-wifi-index="${i}">
+      <span class="wifi-network-main">
+        <span class="wifi-network-ssid">${escHtml(n.ssid || '(hidden)')}</span>
+        <span class="wifi-network-meta">${escHtml(n.encryption || 'Unknown')} - CH ${escHtml(n.channel ?? '--')} - ${escHtml(n.rssi ?? '--')} dBm${n.current ? ' - current' : ''}</span>
+      </span>
+      <span class="wifi-signal">${wifiSignalLabel(Number(n.rssi || -100))}</span>
+    </button>
+  `).join('');
+  list.querySelectorAll('.wifi-network').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const ssid = btn.getAttribute('data-ssid') || '';
+      if (!ssid || ssid === '(hidden)') return;
+      document.getElementById('wifiSsidInput').value = ssid;
+      document.getElementById('wifiPassInput').focus();
+      toast('WiFi SSID selected', 'ok');
+    });
+  });
+}
+
+async function loadWifiScan() {
+  const btn = document.getElementById('scanWifiBtn');
+  const list = document.getElementById('wifiScanList');
+  const status = document.getElementById('wifiScanStatus');
+  if (!btn || !list || !status) return;
+  btn.disabled = true;
+  btn.textContent = 'Scanning...';
+  status.textContent = 'Scanning nearby WiFi networks...';
+  list.innerHTML = '<div class="tiny">Scanning can take a few seconds.</div>';
+  const r = await api('/api/wifi/scan', { auth: false });
+  btn.disabled = false;
+  btn.textContent = 'Scan';
+  if (!r.ok || r.data?.ok === false) {
+    status.textContent = r.data?.message || 'WiFi scan failed.';
+    list.innerHTML = '<div class="tiny">Scan failed. Try again.</div>';
+    toast(r.data?.message || 'WiFi scan failed', 'err');
+    return;
+  }
+  wifiScanLoaded = true;
+  const networks = Array.isArray(r.data?.networks) ? r.data.networks : [];
+  renderWifiNetworks(networks);
+}
+
 async function loadSettings() {
   const r = await api('/api/settings');
   if (!r.ok) return;
@@ -1579,7 +1662,10 @@ async function loadSettings() {
     sel.value = m ? String(m.index) : '';
   }
   updateCloudPanel(d.cloud || {});
+  if (!wifiScanLoaded) loadWifiScan();
 }
+
+document.getElementById('scanWifiBtn').addEventListener('click', loadWifiScan);
 
 document.getElementById('saveSettingsBtn').addEventListener('click', async () => {
   const btn = document.getElementById('saveSettingsBtn');
