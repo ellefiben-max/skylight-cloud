@@ -32,7 +32,9 @@ export async function authenticateDevice(
   }
 
   const rlKey = `device:${boardId}`;
-  const rl = rateLimit(rlKey, 240, 60_000);
+  // Temporary high ceiling for board-device traffic; user-facing routes keep
+  // their stricter rate limits. The device API key still authenticates boards.
+  const rl = rateLimit(rlKey, 5000, 60_000);
   if (!rl.allowed) {
     return { ok: false, status: 429, error: "Too many requests" };
   }

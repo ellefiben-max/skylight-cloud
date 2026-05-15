@@ -8,7 +8,9 @@ import { getClientIp } from "@/lib/device-auth";
 
 export const dynamic = "force-dynamic";
 
-const BOOTSTRAP_RATE_LIMIT = 120;
+// Temporary high ceiling while physical boards stabilize cloud activation.
+// User-facing auth/account routes keep their stricter limits.
+const BOOTSTRAP_RATE_LIMIT = 5000;
 
 const Schema = z.object({
   eventType: z.string().optional(),
