@@ -22,20 +22,54 @@ async function queueCommand(
   payload: Record<string, unknown>,
   userId: string,
   orgId: string,
-  ip: string
+  ip: string,
+  remoteSessionId?: string | null
 ) {
   if (BLOCKED_COMMAND_TYPES.has(type)) return json({ ok: false, message: "Blocked remotely." }, 403);
   if (!ALLOWED_COMMAND_TYPES.has(type)) return json({ ok: false, message: `Unknown command: ${type}` }, 422);
 
+  const commands = [{
+    boardId: boardDbId,
+    type,
+    payloadJson: JSON.stringify(payload),
+    status: "queued",
+    createdByUserId: userId,
+  }];
+
+  if (remoteSessionId && type !== "ui.sync") {
+    const session = await prisma.boardRemoteUiSession.findFirst({
+      where: {
+        id: remoteSessionId,
+        boardId: boardDbId,
+        organizationId: orgId,
+        expiresAt: { gt: new Date() },
+      },
+      select: { id: true, expiresAt: true },
+    });
+
+    if (session) {
+      commands.push({
+        boardId: boardDbId,
+        type: "ui.sync",
+        payloadJson: JSON.stringify({
+          remoteSessionId: session.id,
+          expiresAt: session.expiresAt.toISOString(),
+        }),
+        status: "queued",
+        createdByUserId: userId,
+      });
+    }
+  }
+
   await prisma.boardCommand.create({
-    data: {
-      boardId: boardDbId,
-      type,
-      payloadJson: JSON.stringify(payload),
-      status: "queued",
-      createdByUserId: userId,
-    },
+    data: commands[0],
   });
+
+  if (commands.length > 1) {
+    await prisma.boardCommand.create({
+      data: commands[1],
+    });
+  }
 
   await logAuditEvent({
     organizationId: orgId,
@@ -175,7 +209,15 @@ export async function POST(
 
   const commandType = PATH_TO_COMMAND[apiPath];
   if (commandType) {
-    return queueCommand(board.id, commandType, body, user.id, user.orgId, ip);
+    return queueCommand(
+      board.id,
+      commandType,
+      body,
+      user.id,
+      user.orgId,
+      ip,
+      req.headers.get("x-skylight-remote-session")
+    );
   }
 
   return json({ ok: false, message: "Not supported remotely." }, 404);
