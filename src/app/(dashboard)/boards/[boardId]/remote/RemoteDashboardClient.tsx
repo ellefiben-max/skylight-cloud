@@ -102,7 +102,7 @@ export function RemoteDashboardClient({
     return () => clearInterval(id);
   }, [sendCommand]);
 
-  // Poll status every 1 second.
+  // Poll status every 500ms.
   useEffect(() => {
     const poll = async () => {
       try {
@@ -115,12 +115,26 @@ export function RemoteDashboardClient({
         if (d.recentLogs) setLogs(d.recentLogs);
       } catch {}
     };
-    const id = setInterval(poll, 1000);
+    const id = setInterval(poll, 500);
     return () => clearInterval(id);
   }, [boardId]);
 
   const setRelayMode = useCallback(
     async (relayId: number, mode: number, overrideMin?: number) => {
+      // Optimistic update — reflect the new mode instantly without waiting for
+      // the board to confirm via the next status push.
+      setStatus((prev) => {
+        if (!prev.relays) return prev;
+        const modeLabels: Record<number, string> = { 0: "Auto", 1: "On", 2: "Override" };
+        return {
+          ...prev,
+          relays: prev.relays.map((r) =>
+            r.id === relayId
+              ? { ...r, mode, modeLabel: modeLabels[mode] ?? r.modeLabel, overrideActive: mode === 2 }
+              : r
+          ),
+        };
+      });
       setSending((s) => ({ ...s, [relayId]: true }));
       const payload: Record<string, unknown> = { relayId, mode };
       if (overrideMin !== undefined) payload.override = overrideMin;
