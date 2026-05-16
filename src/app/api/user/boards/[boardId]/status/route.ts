@@ -16,6 +16,7 @@ export async function GET(
   const board = await prisma.board.findFirst({
     where: { id: boardId, organizationId: auth.user.orgId! },
     select: {
+      id: true,
       boardId: true,
       deviceName: true,
       model: true,
@@ -31,6 +32,13 @@ export async function GET(
 
   if (!board) return err("Board not found", 404);
 
+  const recentLogs = await prisma.boardLog.findMany({
+    where: { boardId: board.id },
+    orderBy: { timestamp: "desc" },
+    take: 30,
+    select: { id: true, level: true, source: true, message: true, timestamp: true },
+  });
+
   const now = Date.now();
   const lastSeenMs = board.lastSeenAt ? now - board.lastSeenAt.getTime() : null;
   const online = lastSeenMs !== null && lastSeenMs < 30_000;
@@ -39,6 +47,7 @@ export async function GET(
   return ok({
     ...board,
     status: JSON.parse(board.statusJson),
+    recentLogs,
     online,
     stale,
     connectionState: online ? "live" : stale ? "stale" : "offline",

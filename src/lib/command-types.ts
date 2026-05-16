@@ -8,6 +8,7 @@ export const ALLOWED_COMMAND_TYPES = new Set([
   "time.set",
   "rtc.ack",
   "ui.sync",
+  "remoteUi.start",
   "system.reboot",
 ]);
 
