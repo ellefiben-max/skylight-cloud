@@ -116,6 +116,23 @@ function headers(pin, json = false) {
 const origFetch = window.fetch;
 `;
 
+  const remotePollingScript = `
+if (window.__CLOUD_MODE__) {
+  let __cloudFastPolls = 0;
+  const __cloudPoll = () => {
+    if (typeof loadStatus === 'function') loadStatus();
+    __cloudFastPolls += 1;
+    if (__cloudFastPolls < 24) setTimeout(__cloudPoll, 500);
+  };
+  setTimeout(__cloudPoll, 250);
+  setInterval(() => {
+    if (typeof loadStatus === 'function') loadStatus();
+  }, 1000);
+} else {
+  setInterval(loadStatus, 5000);
+}
+`;
+
   // Inject subscription warning banner before </body>
   const subscriptionBanner = !active
     ? `<div style="position:fixed;top:0;left:0;right:0;z-index:9999;background:#a12c7b;color:#fff;text-align:center;padding:.5rem 1rem;font-size:.875rem;font-weight:600;">
@@ -135,6 +152,8 @@ const origFetch = window.fetch;
     )
     // Override title
     .replace(/<title>SKYLIGHT 100<\/title>/, `<title>${board.deviceName} — Skylight Cloud</title>`)
+    // Poll faster while the firmware is feeding a cloud remote session.
+    .replace("setInterval(loadStatus, 5000);", remotePollingScript)
     // Inject before </head>
     .replace("</head>", `${injectedScript}</head>`)
     // Inject banner before </body>
