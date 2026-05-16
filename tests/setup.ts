@@ -49,6 +49,12 @@ vi.mock("@/lib/db", () => ({
     boardHeartbeat: {
       create: vi.fn(),
     },
+    boardRemoteUiSession: {
+      create: vi.fn(),
+      deleteMany: vi.fn(),
+      findFirst: vi.fn(),
+      update: vi.fn(),
+    },
     boardLog: {
       findMany: vi.fn(),
       create: vi.fn(),

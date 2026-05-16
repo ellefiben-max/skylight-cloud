@@ -30,6 +30,7 @@ describe("command-types", () => {
       "log.clear",
       "time.set",
       "rtc.ack",
+      "ui.sync",
       "system.reboot",
     ];
     for (const t of required) {

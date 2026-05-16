@@ -66,7 +66,29 @@ export async function GET(
     const now = Date.now();
     const lastMs = board.lastSeenAt ? now - board.lastSeenAt.getTime() : null;
     const online = lastMs !== null && lastMs < 30_000;
-    const status = JSON.parse(board.statusJson || "{}");
+    let status = JSON.parse(board.statusJson || "{}");
+    let remoteSession: { id: string; lastSyncedAt: string | null } | null = null;
+    const remoteSessionId = req.headers.get("x-skylight-remote-session");
+
+    if (remoteSessionId) {
+      const session = await prisma.boardRemoteUiSession.findFirst({
+        where: {
+          id: remoteSessionId,
+          boardId: board.id,
+          organizationId: user.orgId,
+          expiresAt: { gt: new Date() },
+        },
+        select: { id: true, statusJson: true, lastSyncedAt: true },
+      });
+
+      if (session) {
+        status = JSON.parse(session.statusJson || "{}");
+        remoteSession = {
+          id: session.id,
+          lastSyncedAt: session.lastSyncedAt?.toISOString() ?? null,
+        };
+      }
+    }
 
     return json({
       ok: true,
@@ -78,7 +100,11 @@ export async function GET(
       online,
       lastSeen: board.lastSeenAt?.toISOString() ?? null,
       ...status,
-      cloud: { claimed: !!board.claimedAt, cloudEnabled: true },
+      cloud: {
+        claimed: !!board.claimedAt,
+        cloudEnabled: true,
+        remoteSession,
+      },
     });
   }
 

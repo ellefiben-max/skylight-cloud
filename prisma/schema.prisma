@@ -93,9 +93,27 @@ model Board {
   logs         BoardLog[]
   heartbeats   BoardHeartbeat[]
   auditEvents  AuditEvent[]
+  remoteUiSessions BoardRemoteUiSession[]
 
   @@index([organizationId])
   @@index([pairingCodeHash])
+}
+
+model BoardRemoteUiSession {
+  id             String   @id
+  boardId        String
+  organizationId String
+  userId         String
+  statusJson     String   @default("{}")
+  expiresAt      DateTime
+  lastSyncedAt   DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
+  @@index([boardId, expiresAt])
+  @@index([organizationId, userId])
 }
 
 model BoardGroup {

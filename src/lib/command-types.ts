@@ -7,6 +7,7 @@ export const ALLOWED_COMMAND_TYPES = new Set([
   "log.clear",
   "time.set",
   "rtc.ack",
+  "ui.sync",
   "system.reboot",
 ]);
 
