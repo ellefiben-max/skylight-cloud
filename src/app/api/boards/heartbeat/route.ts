@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { authenticateDevice } from "@/lib/device-auth";
 import { sha256hex } from "@/lib/crypto";
 import { ok, err } from "@/lib/api-response";
+import { getMqttDeviceConfig, ensureMqttStarted } from "@/lib/mqtt";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,9 @@ export async function POST(req: NextRequest) {
   try { body = await req.json(); } catch { body = {}; }
   const parsed = Schema.safeParse(body);
   const d = parsed.success ? parsed.data : {};
+
+  const mqtt = getMqttDeviceConfig();
+  if (mqtt.enabled) void ensureMqttStarted();
 
   const pendingCount = await prisma.boardCommand.count({
     where: { boardId: auth.board.id, status: "queued" },
@@ -58,5 +62,6 @@ export async function POST(req: NextRequest) {
     pendingCommands: pendingCount,
     claimed: !!auth.board.organizationId,
     boardId: auth.board.boardId,
+    mqtt,
   });
 }

@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { redirect, notFound } from "next/navigation";
 import { getSessionUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
+import { ensureMqttStarted, publishMqttCommand } from "@/lib/mqtt";
 import { RemoteDashboardClient } from "./RemoteDashboardClient";
 
 export default async function RemoteBoardPage({
@@ -19,6 +20,7 @@ export default async function RemoteBoardPage({
     where: { id: boardId, organizationId: user.orgId },
     select: {
       id: true,
+      boardId: true,
       deviceName: true,
       lastSeenAt: true,
       statusJson: true,
@@ -32,7 +34,7 @@ export default async function RemoteBoardPage({
   if (!board) notFound();
 
   // Tell the board to start pushing status immediately.
-  await prisma.boardCommand.create({
+  const startCommand = await prisma.boardCommand.create({
     data: {
       boardId: board.id,
       type: "remoteUi.start",
@@ -41,6 +43,17 @@ export default async function RemoteBoardPage({
       createdByUserId: user.id,
     },
   });
+  const mqttSent = await publishMqttCommand(board.boardId, {
+    id: startCommand.id,
+    type: "remoteUi.start",
+    payload: {},
+  });
+  if (mqttSent) {
+    await prisma.boardCommand.update({
+      where: { id: startCommand.id },
+      data: { status: "delivered", deliveredAt: new Date() },
+    });
+  }
 
   const now = Date.now();
   const lastSeenMs = board.lastSeenAt ? now - board.lastSeenAt.getTime() : null;

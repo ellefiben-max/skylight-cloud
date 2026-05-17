@@ -6,6 +6,7 @@ import { ok, err } from "@/lib/api-response";
 import { ALLOWED_COMMAND_TYPES, BLOCKED_COMMAND_TYPES } from "@/lib/command-types";
 import { logAuditEvent } from "@/lib/audit";
 import { getClientIp } from "@/lib/device-auth";
+import { publishMqttCommand } from "@/lib/mqtt";
 
 export const dynamic = "force-dynamic";
 
@@ -57,6 +58,19 @@ export async function POST(
     },
   });
 
+  const mqttSent = await publishMqttCommand(board.boardId, {
+    id: command.id,
+    type,
+    payload: payload ?? {},
+  });
+
+  if (mqttSent) {
+    await prisma.boardCommand.update({
+      where: { id: command.id },
+      data: { status: "delivered", deliveredAt: new Date() },
+    });
+  }
+
   await logAuditEvent({
     organizationId: auth.user.orgId!,
     userId: auth.user.id,
@@ -66,5 +80,5 @@ export async function POST(
     ipAddress: getClientIp(req),
   });
 
-  return ok({ commandId: command.id, status: "queued" }, 201);
+  return ok({ commandId: command.id, status: mqttSent ? "sent" : "queued", mqttSent }, 201);
 }

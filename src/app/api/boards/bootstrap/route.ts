@@ -5,6 +5,7 @@ import { sha256hex } from "@/lib/crypto";
 import { rateLimit } from "@/lib/rate-limit";
 import { ok, err } from "@/lib/api-response";
 import { getClientIp } from "@/lib/device-auth";
+import { getMqttDeviceConfig, ensureMqttStarted } from "@/lib/mqtt";
 
 export const dynamic = "force-dynamic";
 
@@ -77,6 +78,9 @@ export async function POST(req: NextRequest) {
     return err("Rate limited", 429);
   }
 
+  const mqtt = getMqttDeviceConfig();
+  if (mqtt.enabled) void ensureMqttStarted();
+
   const boardSecretHash = sha256hex(d.boardSecret);
   const pairingCode = d.pairingCode?.trim().toUpperCase();
   const pairingCodeHash = pairingCode ? sha256hex(pairingCode) : "";
@@ -117,7 +121,7 @@ export async function POST(req: NextRequest) {
       pairingCodePresent: !!pairingCode,
     });
 
-    return ok({ claimed: !!existing.organizationId, boardId: d.boardId });
+    return ok({ claimed: !!existing.organizationId, boardId: d.boardId, mqtt });
   }
 
   if (pairingCode) {
@@ -143,7 +147,7 @@ export async function POST(req: NextRequest) {
         boardId: d.boardId,
       });
 
-      return ok({ claimed: false, boardId: d.boardId });
+      return ok({ claimed: false, boardId: d.boardId, mqtt });
     }
   }
 
@@ -170,5 +174,5 @@ export async function POST(req: NextRequest) {
     pairingCodePresent: !!pairingCode,
   });
 
-  return ok({ claimed: false, boardId: d.boardId }, 201);
+  return ok({ claimed: false, boardId: d.boardId, mqtt }, 201);
 }
